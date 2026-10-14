@@ -1,0 +1,116 @@
+{% extends 'crypto_app/base.html' %}
+{% load static %}
+
+{% block title %}Steganography — CryptoHub{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content">
+        <div class="page-header fade-in">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <span>/</span>
+                <span>Advanced</span>
+                <span>/</span>
+                <span>Steganography</span>
+            </div>
+            <h1>🎨 Steganography</h1>
+            <p>The art of hiding messages within images. Secure and invisible communication.</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <!-- ENCODE -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><div class="ch-icon"><i class="fas fa-eye-slash"></i></div> Hide Message (Encode)</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Original Image</label>
+                            <input type="file" name="image" class="form-control" accept="image/*" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Message</label>
+                            <textarea name="text" class="form-control" placeholder="Enter the message you want to hide..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-lock"></i> Encode & Save
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- DECODE -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><div class="ch-icon"><i class="fas fa-search"></i></div> Extract Message (Decode)</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'steganography_decode' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Stego Image (to decode)</label>
+                            <input type="file" name="image" class="form-control" accept="image/*" required>
+                        </div>
+                        <p style="font-size: 0.82rem; color: var(--text-mid); margin-bottom: 1rem;">
+                            Upload an image that was previously encoded with our platform to extract the hidden message.
+                        </p>
+                        <button type="submit" class="btn btn-outline" style="width: 100%;">
+                            <i class="fas fa-unlock"></i> Decode Image
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="card fade-in" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3><div class="ch-icon"><i class="fas fa-history"></i></div> Your Stegano Records</h3>
+            </div>
+            <div class="card-body">
+                {% if records %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Original</th>
+                                <th>Stego Image (Download)</th>
+                                <th>Preview</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td><img src="{{ record.original_image.url }}" style="height: 40px; border-radius: 4px;"></td>
+                                <td>
+                                    {% if record.stego_image %}
+                                    <a href="{{ record.stego_image.url }}" download class="btn btn-sm btn-success">
+                                        <i class="fas fa-download"></i> Download PNG
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td><code style="font-size: 0.8rem;">{{ record.hidden_text }}</code></td>
+                                <td>{{ record.created_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-image"></i>
+                    <h3>No records yet</h3>
+                    <p>Start by hiding your first secret message in an image!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

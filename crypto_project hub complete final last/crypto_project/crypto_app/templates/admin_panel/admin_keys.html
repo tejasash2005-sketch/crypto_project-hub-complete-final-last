@@ -1,0 +1,76 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Key Manager — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / Keys</div>
+        <h1>🔑 Key Manager (All Users)</h1>
+        <p>View all active cryptographic keys across the platform.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><span class="ch-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706);"><i class="fas fa-key"></i></span>
+                Active Keys ({{ keys.count }})
+            </h3>
+        </div>
+        {% if keys %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key Name</th>
+                        <th>Owner</th>
+                        <th>Algorithm</th>
+                        <th>Type</th>
+                        <th>Key Preview</th>
+                        <th>Created</th>
+                        <th>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in keys %}
+                    <tr>
+                        <td style="font-weight:700;">{{ key.name }}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.75rem;">
+                                    {{ key.user.username.0|upper }}
+                                </div>
+                                {{ key.user.username }}
+                            </div>
+                        </td>
+                        <td><span class="algo-chip">{{ key.algorithm }}</span></td>
+                        <td>
+                            <span class="badge-tag {% if key.key_type == 'SYMMETRIC' %}badge-blue{% elif key.key_type == 'PUBLIC' %}badge-green{% elif key.key_type == 'PRIVATE' %}badge-red{% else %}badge-purple{% endif %}">
+                                {{ key.get_key_type_display }}
+                            </span>
+                        </td>
+                        <td style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-mid);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            {{ key.key_value|truncatechars:30 }}
+                        </td>
+                        <td style="font-size:0.82rem;color:var(--text-light);">{{ key.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if key.expires_at %}
+                            <span class="badge-tag {% if key.is_expired %}badge-red{% else %}badge-green{% endif %}">
+                                {% if key.is_expired %}Expired{% else %}{{ key.expires_at|date:"M d, Y" }}{% endif %}
+                            </span>
+                            {% else %}
+                            <span style="color:var(--text-light);font-size:0.82rem;">No expiry</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:4rem;">
+            <i class="fas fa-key"></i>
+            <h3>No active keys</h3>
+            <p>Users haven't generated any keys yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

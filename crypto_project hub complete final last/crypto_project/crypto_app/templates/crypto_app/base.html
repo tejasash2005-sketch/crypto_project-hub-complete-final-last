@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CryptoHub — Cryptography Learning Platform{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --primary-dark: #1D4ED8;
+            --secondary: #0EA5E9;
+            --accent: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #06B6D4;
+            --bg: #F0F4FF;
+            --bg-white: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-mid: #475569;
+            --text-light: #94A3B8;
+            --border: #E2E8F0;
+            --shadow: 0 4px 24px rgba(37,99,235,0.10);
+            --shadow-hover: 0 8px 32px rgba(37,99,235,0.18);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --sidebar-w: 260px;
+            --header-h: 68px;
+            --font-main: 'Nunito', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-main); background: var(--bg); color: var(--text-dark); min-height: 100vh; }
+
+        /* ===== TOP NAVBAR (public) ===== */
+        .topnav {
+            background: #fff;
+            border-bottom: 2px solid var(--border);
+            padding: 0 2rem;
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(37,99,235,0.07);
+        }
+        .topnav .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .topnav .brand .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+        }
+        .topnav .brand span.sub { color: var(--accent); }
+        .topnav nav { display: flex; align-items: center; gap: 0.3rem; }
+        .topnav nav a {
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-mid);
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .topnav nav a:hover, .topnav nav a.active { background: var(--bg); color: var(--primary); }
+        .topnav .auth-btns { display: flex; gap: 0.6rem; align-items: center; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.5rem 1.2rem; border-radius: var(--radius-sm); font-family: var(--font-main); font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow); }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #DC2626; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.82rem; }
+        .btn-lg { padding: 0.75rem 2rem; font-size: 1.05rem; }
+
+        /* ===== SIDEBAR LAYOUT (logged in) ===== */
+        .app-layout { display: flex; min-height: calc(100vh - var(--header-h)); }
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #fff;
+            border-right: 2px solid var(--border);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: var(--header-h);
+            height: calc(100vh - var(--header-h));
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar .sidebar-section { margin-bottom: 1.5rem; }
+        .sidebar .sidebar-title {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-light);
+            padding: 0 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.6rem 0.75rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            color: var(--text-mid);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+            transition: all 0.18s;
+        }
+        .sidebar a .icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; background: var(--bg); color: var(--primary); flex-shrink: 0; }
+        .sidebar a:hover { background: var(--bg); color: var(--primary); }
+        .sidebar a:hover .icon { background: var(--primary); color: white; }
+        .sidebar a.active { background: linear-gradient(90deg, #EFF6FF, #DBEAFE); color: var(--primary); border-left: 3px solid var(--primary); }
+        .sidebar a.active .icon { background: var(--primary); color: white; }
+        .sidebar .badge { margin-left: auto; background: var(--accent); color: white; font-size: 0.7rem; padding: 2px 7px; border-radius: 20px; font-weight: 800; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { flex: 1; padding: 2rem; overflow-x: hidden; }
+        .page-header { margin-bottom: 1.8rem; }
+        .page-header h1 { font-size: 1.8rem; font-weight: 900; color: var(--text-dark); }
+        .page-header p { color: var(--text-mid); margin-top: 0.3rem; }
+        .breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.6rem; }
+        .breadcrumb a { color: var(--primary); text-decoration: none; }
+
+        /* ===== CARDS ===== */
+        .card { background: var(--bg-card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+        .card-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .card-header h3 { font-size: 1rem; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+        .card-header h3 .ch-icon { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .card-body { padding: 1.5rem; }
+
+        /* ===== STAT CARDS ===== */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-card { background: white; border-radius: var(--radius); padding: 1.3rem; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; transition: all 0.2s; }
+        .stat-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .stat-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .stat-icon.blue { background: #EFF6FF; color: var(--primary); }
+        .stat-icon.green { background: #ECFDF5; color: var(--success); }
+        .stat-icon.amber { background: #FFFBEB; color: var(--accent); }
+        .stat-icon.cyan { background: #ECFEFF; color: var(--info); }
+        .stat-icon.red { background: #FEF2F2; color: var(--danger); }
+        .stat-icon.purple { background: #F5F3FF; color: #7C3AED; }
+        .stat-value { font-size: 1.8rem; font-weight: 900; color: var(--text-dark); line-height: 1; }
+        .stat-label { font-size: 0.8rem; color: var(--text-light); font-weight: 700; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ===== GRID ===== */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+
+        /* ===== TABLES ===== */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--bg); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-mid); padding: 0.75rem 1rem; text-align: left; }
+        td { padding: 0.8rem 1rem; border-top: 1px solid var(--border); font-size: 0.9rem; color: var(--text-dark); vertical-align: middle; }
+        tr:hover td { background: #FAFBFF; }
+
+        /* ===== BADGES ===== */
+        .badge-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .badge-blue { background: #DBEAFE; color: #1D4ED8; }
+        .badge-green { background: #D1FAE5; color: #065F46; }
+        .badge-red { background: #FEE2E2; color: #991B1B; }
+        .badge-amber { background: #FEF3C7; color: #92400E; }
+        .badge-purple { background: #EDE9FE; color: #5B21B6; }
+        .badge-cyan { background: #CFFAFE; color: #164E63; }
+        .badge-gray { background: #F1F5F9; color: #475569; }
+
+        /* ===== FORMS ===== */
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; font-weight: 700; font-size: 0.88rem; color: var(--text-dark); margin-bottom: 0.4rem; }
+        .form-control {
+            width: 100%; padding: 0.65rem 1rem;
+            border: 2px solid var(--border); border-radius: var(--radius-sm);
+            font-family: var(--font-main); font-size: 0.9rem; color: var(--text-dark);
+            background: white; transition: border 0.2s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        textarea.form-control { resize: vertical; min-height: 100px; }
+        .form-text { font-size: 0.78rem; color: var(--text-light); margin-top: 0.3rem; }
+        .form-check { display: flex; align-items: center; gap: 8px; margin-bottom: 0.5rem; }
+        .form-check-input { width: 18px; height: 18px; cursor: pointer; }
+
+        /* ===== ALERTS ===== */
+        .alert { padding: 1rem 1.2rem; border-radius: var(--radius-sm); margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.7rem; font-weight: 600; font-size: 0.9rem; }
+        .alert-success { background: #D1FAE5; color: #065F46; border-left: 4px solid var(--success); }
+        .alert-error { background: #FEE2E2; color: #991B1B; border-left: 4px solid var(--danger); }
+        .alert-warning { background: #FEF3C7; color: #92400E; border-left: 4px solid var(--warning); }
+        .alert-info { background: #CFFAFE; color: #164E63; border-left: 4px solid var(--info); }
+
+        /* ===== ALGO CHIP ===== */
+        .algo-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; background: #EFF6FF; color: var(--primary); font-size: 0.8rem; font-weight: 800; font-family: var(--font-mono); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-light); }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: var(--border); }
+        .empty-state h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+
+        /* ===== FOOTER ===== */
+        footer { background: var(--text-dark); color: #94A3B8; padding: 3rem 2rem 1.5rem; margin-top: 4rem; }
+        footer .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem; }
+        footer h4 { color: white; font-weight: 800; margin-bottom: 1rem; font-size: 0.95rem; }
+        footer a { color: #94A3B8; text-decoration: none; display: block; margin-bottom: 0.5rem; font-size: 0.88rem; transition: color 0.2s; }
+        footer a:hover { color: white; }
+        footer .footer-bottom { border-top: 1px solid #334155; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        footer .brand-footer { color: white; font-size: 1.4rem; font-weight: 900; margin-bottom: 0.8rem; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .topnav { padding: 0 1rem; }
+            .main-content { padding: 1rem; }
+        }
+
+        /* ===== SCROLL ===== */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.35s ease both; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="topnav">
+    <a href="{% url 'home' %}" class="brand">
+        <div class="logo-icon"><i class="fas fa-lock"></i></div>
+        Crypto<span class="sub">Hub</span>
+    </a>
+
+    {% if user.is_authenticated %}
+    <nav>
+        {% if user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+        {% else %}
+        <a href="{% url 'dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="{% url 'encryption_tool' %}"><i class="fas fa-key"></i> Encrypt</a>
+        <a href="{% url 'topics' %}"><i class="fas fa-book"></i> Learn</a>
+        {% endif %}
+    </nav>
+    <div class="auth-btns">
+        <span style="font-weight:700; color:var(--text-mid);">
+            <i class="fas fa-user-circle" style="color:var(--primary)"></i>
+            {{ user.get_full_name|default:user.username }}
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn-outline btn-sm">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+    {% else %}
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'about' %}">About</a>
+        <a href="{% url 'topics' %}">Topics</a>
+        <a href="{% url 'contact' %}">Contact</a>
+    </nav>
+    <div class="auth-btns">
+        <a href="{% url 'login' %}" class="btn btn-outline btn-sm"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-sm"><i class="fas fa-user-plus"></i> Register</a>
+    </div>
+    {% endif %}
+</header>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div style="position:fixed; top:80px; right:1.5rem; z-index:999; width:340px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }}" style="box-shadow:var(--shadow); margin-bottom:0.5rem;">
+        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% block body %}{% endblock %}
+
+{% if not user.is_authenticated %}
+<!-- PUBLIC FOOTER -->
+<footer>
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="footer-grid">
+            <div>
+                <div class="brand-footer">🔐 CryptoHub</div>
+                <p style="font-size:0.88rem; line-height:1.7;">Your complete platform for learning and practising cryptography — from classical ciphers to modern encryption.</p>
+            </div>
+            <div>
+                <h4>Learn</h4>
+                <a href="{% url 'topics' %}">Cryptography Topics</a>
+                <a href="{% url 'about' %}">About Cryptography</a>
+                <a href="{% url 'register' %}">Get Started Free</a>
+            </div>
+            <div>
+                <h4>Platform</h4>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'contact' %}">Contact Us</a>
+            </div>
+            <div>
+                <h4>Algorithms</h4>
+                <a href="#">AES Encryption</a>
+                <a href="#">RSA Encryption</a>
+                <a href="#">Caesar Cipher</a>
+                <a href="#">SHA-256 Hash</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 CryptoHub. Built for learning cryptography. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endif %}
+
+<script>
+// Auto-hide messages
+setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+        el.style.transition = 'opacity 0.5s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 500);
+    });
+}, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

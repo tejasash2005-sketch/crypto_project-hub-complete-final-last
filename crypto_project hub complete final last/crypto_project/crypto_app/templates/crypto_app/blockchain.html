@@ -1,0 +1,114 @@
+{% extends 'crypto_app/base.html' %}
+{% load static %}
+
+{% block title %}Blockchain Explorer — CryptoHub{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content">
+        <div class="page-header fade-in">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <span>/</span>
+                <span>Advanced</span>
+                <span>/</span>
+                <span>Blockchain Explorer</span>
+            </div>
+            <h1>🚀 Blockchain Explorer</h1>
+            <p>Understand the core of the crypto era by simulating a simplified proof-of-work blockchain.</p>
+        </div>
+
+        <div class="grid-2 fade-in">
+            <!-- MINE NEW BLOCK -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><div class="ch-icon"><i class="fas fa-hammer"></i></div> Mine New Block</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'mine_block' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Block Data</label>
+                            <textarea name="data" class="form-control" placeholder="Enter transaction data or any message to store in the block..."></textarea>
+                            <div class="form-text">This data will be permanently recorded in the blockchain.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                            <i class="fas fa-pickaxe"></i> Mine Block
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- INFO CARD -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><div class="ch-icon"><i class="fas fa-info-circle"></i></div> How it works</h3>
+                </div>
+                <div class="card-body">
+                    <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text-mid);">
+                        A blockchain is a distributed ledger of blocks linked by cryptographic hashes.
+                        Each block contains:
+                    </p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem; font-size: 0.85rem; color: var(--text-mid);">
+                        <li><b>Index:</b> Position in the chain.</li>
+                        <li><b>Data:</b> The information stored in the block.</li>
+                        <li><b>Previous Hash:</b> The hash of the block before it, creating the "chain".</li>
+                        <li><b>Nonce:</b> A number used to find a hash that meets a specific difficulty (Mining).</li>
+                        <li><b>Hash:</b> The digital fingerprint of the current block.</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--text-light);">
+                        Changing any data in a block invalidates all subsequent blocks, making the system immutable.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCKCHAIN VISUALIZATION -->
+        <div class="card fade-in" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h3><div class="ch-icon"><i class="fas fa-link"></i></div> The Chain</h3>
+            </div>
+            <div class="card-body">
+                {% if blocks %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for block in blocks %}
+                    <div style="background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1.2rem; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <span class="badge-tag badge-purple">BLOCK #{{ block.index }}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-light);"><i class="fas fa-clock"></i> {{ block.timestamp }}</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 100px 1fr; gap: 0.5rem; font-size: 0.85rem;">
+                            <b style="color: var(--text-mid);">DATA:</b>
+                            <div style="background: white; padding: 5px 10px; border-radius: 4px; font-family: var(--font-mono);">{{ block.data }}</div>
+
+                            <b style="color: var(--text-mid);">PREV HASH:</b>
+                            <div style="color: var(--text-light); font-family: var(--font-mono); font-size: 0.75rem; word-break: break-all;">{{ block.previous_hash }}</div>
+
+                            <b style="color: var(--text-mid);">HASH:</b>
+                            <div style="color: var(--success); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; word-break: break-all;">{{ block.hash }}</div>
+
+                            <b style="color: var(--text-mid);">NONCE:</b>
+                            <div style="font-family: var(--font-mono);">{{ block.nonce }}</div>
+                        </div>
+
+                        {% if not forloop.last %}
+                        <div style="position: absolute; bottom: -1rem; left: 50px; width: 4px; height: 1rem; background: var(--primary); z-index: 1;"></div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-cube"></i>
+                    <h3>No blocks yet</h3>
+                    <p>Start by mining the first block (Genesis Block).</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

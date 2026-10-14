@@ -1,0 +1,54 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Login — CryptoHub{% endblock %}
+{% block body %}
+<div style="min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,#F0F4FF 0%,#E0EAFF 100%);">
+    <div style="width:100%;max-width:460px;" class="fade-in">
+        <!-- Card -->
+        <div class="card">
+            <div style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:2.5rem;text-align:center;color:white;">
+                <div style="width:70px;height:70px;background:rgba(255,255,255,0.2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">🔐</div>
+                <h1 style="font-size:1.6rem;font-weight:900;">Welcome Back!</h1>
+                <p style="opacity:0.85;margin-top:0.3rem;">Sign in to your CryptoHub account</p>
+            </div>
+            <div class="card-body" style="padding:2rem;">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Invalid username or password. Please try again.
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <label><i class="fas fa-user" style="color:var(--primary)"></i> Username</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock" style="color:var(--primary)"></i> Password</label>
+                        {{ form.password }}
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;padding:0.8rem;font-size:1rem;margin-top:0.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </form>
+                <p style="text-align:center;margin-top:1.5rem;color:var(--text-mid);font-size:0.9rem;">
+                    Don't have an account?
+                    <a href="{% url 'register' %}" style="color:var(--primary);font-weight:700;">Create one free</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div style="margin-top:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+            <div style="background:white;padding:1rem;border-radius:var(--radius);border:1px solid var(--border);text-align:center;">
+                <div style="font-size:1.5rem;margin-bottom:0.3rem;">🔒</div>
+                <div style="font-size:0.8rem;font-weight:700;color:var(--text-mid);">Secure Login</div>
+            </div>
+            <div style="background:white;padding:1rem;border-radius:var(--radius);border:1px solid var(--border);text-align:center;">
+                <div style="font-size:1.5rem;margin-bottom:0.3rem;">⚡</div>
+                <div style="font-size:0.8rem;font-weight:700;color:var(--text-mid);">Instant Access</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

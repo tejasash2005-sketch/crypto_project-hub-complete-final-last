@@ -1,0 +1,45 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Activity Log — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Activity Log</div>
+            <h1>📊 Activity Log</h1>
+            <p>Complete audit trail of all your actions on CryptoHub.</p>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-clipboard-list"></i></span> All Activity ({{ logs|length }})</h3>
+            </div>
+            {% if logs %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Action</th><th>Description</th><th>IP Address</th><th>Timestamp</th></tr></thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>
+                                <span class="badge-tag {% if log.action == 'LOGIN' %}badge-green{% elif log.action == 'LOGOUT' %}badge-gray{% elif log.action == 'ENCRYPT' %}badge-blue{% elif log.action == 'DECRYPT' %}badge-cyan{% elif log.action == 'KEY_CREATE' %}badge-amber{% elif log.action == 'QUIZ_ATTEMPT' %}badge-purple{% else %}badge-gray{% endif %}">
+                                    {{ log.get_action_display }}
+                                </span>
+                            </td>
+                            <td style="color:var(--text-mid);font-size:0.88rem;">{{ log.description|default:"—" }}</td>
+                            <td style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-light);">{{ log.ip_address|default:"—" }}</td>
+                            <td style="font-size:0.82rem;color:var(--text-light);">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state" style="padding:4rem;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No activity recorded yet</h3>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}

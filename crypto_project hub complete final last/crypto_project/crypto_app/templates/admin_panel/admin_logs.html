@@ -1,0 +1,171 @@
+{% extends 'admin_panel/admin_base.html' %}
+
+{% block title %}Encryption Logs — CryptoHub Admin{% endblock %}
+
+{% block admin_content %}
+<div class="fade-in">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a href="{% url 'admin_dashboard' %}">Admin</a> / Logs
+        </div>
+        <h1>📜 Encryption Logs</h1>
+        <p>All encryption and decryption operations performed on the platform.</p>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="card" style="margin-bottom:1.2rem;">
+        <div class="card-body">
+
+            <form method="get" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
+
+                <!-- Username -->
+                <div class="form-group" style="margin:0;flex:1;min-width:150px;">
+                    <label>Username</label>
+                    <input type="text"
+                           name="user"
+                           value="{{ user_filter }}"
+                           class="form-control"
+                           placeholder="Filter by username...">
+                </div>
+
+                <!-- Algorithm -->
+                <div class="form-group" style="margin:0;flex:1;min-width:150px;">
+                    <label>Algorithm</label>
+                    <select name="algorithm" class="form-control">
+
+                        <option value="">All Algorithms</option>
+
+                        <!-- ✅ FIXED: no split -->
+                        <option value="CAESAR" {% if algo_filter == "CAESAR" %}selected{% endif %}>CAESAR</option>
+                        <option value="VIGENERE" {% if algo_filter == "VIGENERE" %}selected{% endif %}>VIGENERE</option>
+                        <option value="ROT13" {% if algo_filter == "ROT13" %}selected{% endif %}>ROT13</option>
+                        <option value="ATBASH" {% if algo_filter == "ATBASH" %}selected{% endif %}>ATBASH</option>
+                        <option value="AES" {% if algo_filter == "AES" %}selected{% endif %}>AES</option>
+                        <option value="XOR" {% if algo_filter == "XOR" %}selected{% endif %}>XOR</option>
+                        <option value="RSA" {% if algo_filter == "RSA" %}selected{% endif %}>RSA</option>
+                        <option value="BASE64" {% if algo_filter == "BASE64" %}selected{% endif %}>BASE64</option>
+                        <option value="MD5" {% if algo_filter == "MD5" %}selected{% endif %}>MD5</option>
+                        <option value="SHA256" {% if algo_filter == "SHA256" %}selected{% endif %}>SHA256</option>
+                        <option value="SHA512" {% if algo_filter == "SHA512" %}selected{% endif %}>SHA512</option>
+
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+
+                <a href="{% url 'admin_logs' %}" class="btn btn-outline">
+                    Clear
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+
+        <div class="card-header">
+            <h3>
+                <span class="ch-icon"><i class="fas fa-history"></i></span>
+                Operations Log ({{ logs.count }})
+            </h3>
+        </div>
+
+        {% if logs %}
+        <div class="table-wrap">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Algorithm</th>
+                        <th>Operation</th>
+                        <th>Input</th>
+                        <th>Output</th>
+                        <th>Key</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+
+                        <!-- User -->
+                        <td style="font-weight:700;">
+                            {{ log.user.username }}
+                        </td>
+
+                        <!-- Algorithm -->
+                        <td>
+                            <span class="algo-chip">{{ log.algorithm }}</span>
+                        </td>
+
+                        <!-- Operation -->
+                        <td>
+                            <span class="badge-tag
+                                {% if log.operation == 'ENCRYPT' %}badge-blue
+                                {% elif log.operation == 'DECRYPT' %}badge-green
+                                {% else %}badge-amber
+                                {% endif %}">
+                                {{ log.operation }}
+                            </span>
+                        </td>
+
+                        <!-- Input -->
+                        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                            title="{{ log.input_text }}">
+                            {{ log.input_text|truncatechars:30 }}
+                        </td>
+
+                        <!-- Output -->
+                        <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                            title="{{ log.output_text }}">
+                            {{ log.output_text|truncatechars:30 }}
+                        </td>
+
+                        <!-- Key -->
+                        <td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            {{ log.key_used|default:"—"|truncatechars:20 }}
+                        </td>
+
+                        <!-- Status -->
+                        <td>
+                            {% if log.success %}
+                                <span class="badge-tag badge-green">OK</span>
+                            {% else %}
+                                <span class="badge-tag badge-red">Fail</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Date -->
+                        <td style="font-size:0.8rem;color:var(--text-light);">
+                            {{ log.created_at|date:"M d, Y H:i" }}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+        <!-- EMPTY -->
+        <div class="empty-state" style="padding:4rem;text-align:center;">
+            <h3>No logs found</h3>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

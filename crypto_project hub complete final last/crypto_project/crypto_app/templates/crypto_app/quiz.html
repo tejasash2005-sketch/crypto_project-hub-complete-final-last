@@ -1,0 +1,102 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Cryptography Quiz — CryptoHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.question-card { background:white; border:2px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1rem; }
+
+.options { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.8rem; }
+
+.option-label {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0.7rem 1rem;
+    border:2px solid var(--border);
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:all 0.2s;
+}
+
+.option-label:has(input:checked) {
+    border-color:var(--primary);
+    background:#EFF6FF;
+    color:var(--primary);
+}
+
+.option-label input { accent-color:var(--primary); }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content fade-in">
+
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a> / Quiz
+            </div>
+            <h1>🧠 Cryptography Quiz</h1>
+            <p>Test your knowledge! {{ questions|length }} questions.</p>
+        </div>
+
+        <form method="post" action="{% url 'quiz_submit' %}">
+            {% csrf_token %}
+
+            {% for q in questions %}
+            <div class="question-card fade-in">
+
+                <!-- Question -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.8rem;">
+                    <span style="background:var(--primary);color:white;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.85rem;">
+                        {{ forloop.counter }}
+                    </span>
+                    <span style="font-weight:700;">
+                        {{ q.question }}
+                    </span>
+                </div>
+
+                <!-- Options -->
+                <div class="options">
+
+                    <label class="option-label">
+                        <input type="radio" name="question_{{ q.id }}" value="A">
+                        A. {{ q.option_a }}
+                    </label>
+
+                    <label class="option-label">
+                        <input type="radio" name="question_{{ q.id }}" value="B">
+                        B. {{ q.option_b }}
+                    </label>
+
+                    <label class="option-label">
+                        <input type="radio" name="question_{{ q.id }}" value="C">
+                        C. {{ q.option_c }}
+                    </label>
+
+                    <label class="option-label">
+                        <input type="radio" name="question_{{ q.id }}" value="D">
+                        D. {{ q.option_d }}
+                    </label>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+            <div style="text-align:center;padding:1.5rem 0;">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-paper-plane"></i> Submit Quiz
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+</div>
+{% endblock %}

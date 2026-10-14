@@ -1,0 +1,307 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Professional Security Suite — CryptoHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .suite-card { border-top: 4px solid var(--primary); }
+    .result-box { background: #f0f7ff; padding: 1rem; border-radius: 8px; font-family: monospace; word-break: break-all; margin-top: 1rem; border: 1px solid #cce3ff; }
+    .history-item { padding: 0.8rem; border-bottom: 1px solid var(--border); }
+    .history-item:last-child { border-bottom: none; }
+    .feature-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; background: #e0e7ff; color: #4338ca; font-weight: bold; }
+
+    /* Digital Signature Certificate Card Styles */
+    .sig-cert-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: auto;
+    }
+    .sig-cert-header {
+        background: #1e293b;
+        color: #f8fafc;
+        padding: 10px 15px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+    }
+    .sig-cert-body {
+        padding: 15px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+    .sig-info-row {
+        margin-bottom: 12px;
+    }
+    .sig-info-row .label {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 800;
+        margin-bottom: 2px;
+    }
+    .sig-info-row .value {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+    .message-text {
+        font-style: italic;
+        color: var(--primary);
+    }
+    .sig-blob {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.65rem;
+        color: #475569;
+        word-break: break-all;
+        max-height: 40px;
+        overflow: hidden;
+    }
+    .btn-copy-mini {
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 0.65rem;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        margin-top: 2px;
+    }
+    .sig-cert-footer {
+        padding: 8px 15px;
+        border-top: 1px dashed #cbd5e1;
+        background: #f8fafc;
+        text-align: center;
+    }
+    .status-verified {
+        color: #059669;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Professional Suite</div>
+            <h1>🛡️ Professional Security Suite</h1>
+            <p>Industry-standard authenticated encryption, digital signatures, and identity management.</p>
+        </div>
+
+        <div class="grid-2">
+            <!-- Action Cards -->
+            <div class="space-y">
+
+                <!-- AES-GCM Section -->
+                <div class="card suite-card">
+                    <div class="card-header"><h3><i class="fas fa-shield-alt"></i> AES-256-GCM (Authenticated)</h3></div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="AES_GCM_ENCRYPT">
+                            <div class="form-group">
+                                <label>Plaintext to Encrypt</label>
+                                <textarea name="input_text" class="form-control" rows="2" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Secret Password</label>
+                                <input type="password" name="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Encrypt with AES-GCM</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- RSA Digital Signatures -->
+                <div class="card suite-card">
+                    <div class="card-header"><h3><i class="fas fa-file-signature"></i> Digital Signature (RSA-PSS)</h3></div>
+                    <div class="card-body">
+                        <div class="tabs" style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button class="btn btn-sm btn-outline active" onclick="showTab('sign')">Sign</button>
+                            <button class="btn btn-sm btn-outline" onclick="showTab('verify')">Verify</button>
+                        </div>
+
+                        <div id="sign-tab">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="RSA_SIGN">
+                                <div class="form-group">
+                                    <label>Message to Sign</label>
+                                    <textarea name="input_text" class="form-control" rows="2" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Sign Message</button>
+                            </form>
+                        </div>
+
+                        <div id="verify-tab" style="display:none;">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="RSA_VERIFY">
+                                <div class="form-group">
+                                    <label>Original Message</label>
+                                    <textarea name="input_text" class="form-control" rows="1" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Signature (Base64)</label>
+                                    <textarea name="signature" class="form-control" rows="1" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Public Key (PEM)</label>
+                                    <textarea name="public_key" class="form-control" rows="2" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Verify Signature</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ECC Section -->
+                <div class="card suite-card">
+                    <div class="card-header"><h3><i class="fas fa-project-diagram"></i> Elliptic Curve (Ed25519)</h3></div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="ECC_GENERATE">
+                            <button type="submit" class="btn btn-primary w-100">Generate ECC Identity</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TOTP 2FA -->
+                <div class="card suite-card">
+                    <div class="card-header"><h3><i class="fas fa-user-check"></i> Two-Factor Auth (TOTP)</h3></div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="TOTP_GEN">
+                            <button type="submit" class="btn btn-primary w-100">Generate 2FA Secret</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Results & History -->
+            <div class="space-y">
+                {% if results %}
+                <div class="card" style="border-left: 5px solid {% if results.is_valid == False %}var(--danger){% else %}var(--success){% endif %}; position: relative;">
+                    <div class="card-header"><h3>✅ Operation Result</h3></div>
+                    <div class="card-body">
+                        <p><strong>Type:</strong> {{ results.type }}</p>
+
+                        {% if results.signature %}
+                        <!-- Signature Certificate Card -->
+                        <div class="sig-cert-card mt-3">
+                            <div class="sig-cert-header">
+                                <i class="fas fa-certificate"></i> Digital Signature Certificate
+                            </div>
+                            <div class="sig-cert-body">
+                                <div class="sig-info-row">
+                                    <span class="label">Message:</span>
+                                    <span class="value message-text">"{{ results.input }}"</span>
+                                </div>
+                                <div class="sig-info-row">
+                                    <span class="label">Signature:</span>
+                                    <div class="sig-blob">{{ results.signature|truncatechars:100 }}...</div>
+                                    <button class="btn-copy-mini" onclick="copyText('{{ results.signature }}')">Copy Full</button>
+                                </div>
+                                <div class="sig-info-row mt-2">
+                                    <span class="label">Public Key:</span>
+                                    <div class="sig-blob">{{ results.public_key|truncatechars:60 }}...</div>
+                                    <button class="btn-copy-mini" onclick="copyText('{{ results.public_key|escapejs }}')">Copy Full</button>
+                                </div>
+                            </div>
+                            <div class="sig-cert-footer">
+                                <span class="status-verified"><i class="fas fa-check-circle"></i> Cryptographically Signed</span>
+                            </div>
+                        </div>
+                        {% elif results.data %}
+                            <div class="result-box">
+                                <strong>Ciphertext:</strong> {{ results.data.ciphertext }}<br>
+                                <strong>Nonce:</strong> {{ results.data.nonce }}<br>
+                                <strong>Salt:</strong> {{ results.data.salt }}
+                            </div>
+                        {% elif results.is_valid is not None %}
+                             <div class="result-box" style="text-align:center;">
+                                <div style="font-size:1.5rem;">{{ results.message }}</div>
+                             </div>
+                        {% elif results.public_key %}
+                            <div class="result-box">
+                                <strong>Public Key:</strong><br>{{ results.public_key }}<br><br>
+                                <strong>Private Key:</strong><br>{{ results.private_key }}
+                            </div>
+                        {% elif results.secret %}
+                            <div class="result-box">
+                                <strong>Secret Key:</strong> {{ results.secret }}<br>
+                                <p class="small text-muted">{{ results.instruction }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card">
+                    <div class="card-header"><h3>🕒 Recent Professional Ops</h3></div>
+                    <div class="card-body p-0">
+                        {% for item in history %}
+                        <div class="history-item d-flex justify-content-between align-items-center" style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+                            <div>
+                                <span class="feature-tag">{{ item.get_feature_type_display }}</span>
+                                <div class="small mt-1 text-muted">{{ item.created_at|timesince }} ago</div>
+                                <div class="mt-1" style="font-size:0.85rem;">Input: {{ item.input_data|truncatechars:30 }}</div>
+                            </div>
+                            <a href="?view_id={{ item.id }}" class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.7rem;">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </div>
+                        {% empty %}
+                        <p class="p-3 text-center text-muted">No history yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showTab(tab) {
+        if(tab === 'sign') {
+            document.getElementById('sign-tab').style.display = 'block';
+            document.getElementById('verify-tab').style.display = 'none';
+        } else {
+            document.getElementById('sign-tab').style.display = 'none';
+            document.getElementById('verify-tab').style.display = 'block';
+        }
+        // Toggle active class on buttons
+        const btnContainer = event.target.parentElement;
+        btnContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied to clipboard!");
+        });
+    }
+</script>
+{% endblock %}

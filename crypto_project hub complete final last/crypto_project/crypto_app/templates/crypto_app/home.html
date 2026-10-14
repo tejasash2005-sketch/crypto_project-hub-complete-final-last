@@ -1,0 +1,297 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}CryptoHub — Master the Art of Secure Communication{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 3rem;
+    }
+    .feature-img-card {
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        border: 1px solid var(--border);
+    }
+    .feature-img-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    .feature-img-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    .feature-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: crop;
+        transition: transform 0.5s ease;
+    }
+    .feature-img-card:hover .feature-img-container img {
+        transform: scale(1.1);
+    }
+    .text-gradient {
+        background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .stat-badge {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- NEW ADVANCED HERO SECTION -->
+<section style="position:relative; background:#0F172A; color:white; padding: 8rem 2rem; overflow:hidden;">
+    <!-- Background Image with Overlay -->
+    <div style="position:absolute; inset:0; opacity:0.3;">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" style="width:100%; height:100%; object-fit:cover;" alt="Background">
+        <div style="position:absolute; inset:0; background:radial-gradient(circle at center, transparent 0%, #0F172A 100%);"></div>
+    </div>
+
+    <div style="position:relative; max-width:1200px; margin:0 auto; display:grid; grid-template-columns: 1.2fr 1fr; gap:4rem; align-items:center;">
+        <div class="fade-in">
+            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.1); padding:8px 16px; border-radius:50px; margin-bottom:2rem; border:1px solid rgba(255,255,255,0.1);">
+                <span style="color:#FCD34D;"><i class="fas fa-sparkles"></i></span>
+                <span style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">The Ultimate Crypto Learning Lab</span>
+            </div>
+            <h1 style="font-size:4rem; font-weight:900; line-height:1.1; margin-bottom:1.5rem;">
+                Secure Your Data.<br>
+                <span class="text-gradient">Master Encryption.</span>
+            </h1>
+            <p style="font-size:1.25rem; opacity:0.8; margin-bottom:2.5rem; line-height:1.6; max-width:600px;">
+                Join the most comprehensive platform to learn, test, and implement cryptographic algorithms. From historical ciphers to enterprise-grade AES-256.
+            </p>
+            <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+                <a href="{% url 'register' %}" class="btn btn-lg" style="background:#FCD34D; color:#1E293B; border-radius:12px; padding:1rem 2.5rem;">
+                    Get Started Free <i class="fas fa-arrow-right" style="margin-left:8px;"></i>
+                </a>
+                <a href="{% url 'topics' %}" class="btn btn-lg btn-outline" style="border-color:rgba(255,255,255,0.3); color:white; border-radius:12px; padding:1rem 2.5rem; backdrop-filter:blur(5px);">
+                    Explore Algorithms
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-glass fade-in" style="animation-delay: 0.2s;">
+            <div style="text-align:center;">
+                <div style="font-size:3rem; margin-bottom:1rem;">🔐</div>
+                <h3 style="font-weight:800; margin-bottom:1rem; font-size:1.5rem;">Interactive Encryption</h3>
+                <p style="opacity:0.7; font-size:0.95rem; margin-bottom:2rem;">Try our live encryption engine right now. No signup required to test simple ciphers.</p>
+
+                <div style="background:rgba(0,0,0,0.2); border-radius:12px; padding:1.5rem; text-align:left;">
+                    <label style="color:#94A3B8; font-size:0.75rem; text-transform:uppercase;">Input Text</label>
+                    <div style="color:white; font-family:var(--font-mono); margin-bottom:1rem;">Hello World!</div>
+                    <label style="color:#94A3B8; font-size:0.75rem; text-transform:uppercase;">Caesar Cipher (Shift 3)</label>
+                    <div style="color:#FCD34D; font-family:var(--font-mono); font-weight:700;">Khoor Zruog!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BRAND TRUST / STATS -->
+<section style="background:white; padding:4rem 2rem; border-bottom:1px solid #E2E8F0;">
+    <div style="max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:3rem;">
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="font-size:2.5rem; font-weight:900; color:var(--text-dark);">{{ stats.total_users }}+</div>
+            <div style="color:var(--text-mid); font-weight:600; font-size:1rem; line-height:1.2;">Global<br>Learners</div>
+        </div>
+        <div style="width:2px; height:40px; background:#E2E8F0;" class="d-none d-md-block"></div>
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="font-size:2.5rem; font-weight:900; color:var(--primary);">{{ stats.algorithms_available }}</div>
+            <div style="color:var(--text-mid); font-weight:600; font-size:1rem; line-height:1.2;">Security<br>Algorithms</div>
+        </div>
+        <div style="width:2px; height:40px; background:#E2E8F0;" class="d-none d-md-block"></div>
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="font-size:2.5rem; font-weight:900; color:var(--success);">{{ stats.total_encryptions }}+</div>
+            <div style="color:var(--text-mid); font-weight:600; font-size:1rem; line-height:1.2;">Calculations<br>Processed</div>
+        </div>
+        <div style="width:2px; height:40px; background:#E2E8F0;" class="d-none d-md-block"></div>
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div style="font-size:2.5rem; font-weight:900; color:var(--accent);">24/7</div>
+            <div style="color:var(--text-mid); font-weight:600; font-size:1rem; line-height:1.2;">Cloud<br>Availability</div>
+        </div>
+    </div>
+</section>
+
+<!-- MAIN MODULES SECTION WITH IMAGES -->
+<section style="padding:6rem 2rem; max-width:1200px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:4rem;">
+        <h2 style="font-size:2.8rem; font-weight:900; color:#0F172A; margin-bottom:1rem;">Professional Toolset</h2>
+        <p style="color:var(--text-mid); font-size:1.15rem; max-width:700px; margin:0 auto;">Explore our 9 specialized modules designed for beginners and security experts alike.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap:2.5rem;">
+        <!-- Encryption Engine -->
+        <div class="feature-img-card">
+            <div class="feature-img-container">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop" alt="Encryption">
+                <div style="position:absolute; top:1rem; left:1rem;">
+                    <span class="stat-badge">Primary Tool</span>
+                </div>
+            </div>
+            <div style="padding:2rem;">
+                <h3 style="font-weight:800; font-size:1.4rem; margin-bottom:0.75rem;">Encryption Engine</h3>
+                <p style="color:var(--text-mid); line-height:1.6; font-size:0.95rem; margin-bottom:1.5rem;">
+                    Multi-algorithm processor supporting AES, RSA, DES, and classic ciphers with real-time feedback.
+                </p>
+                <a href="{% url 'encryption_tool' %}" style="text-decoration:none; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
+                    Try Encrypting <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Key Management -->
+        <div class="feature-img-card">
+            <div class="feature-img-container">
+                <img src="https://images.unsplash.com/photo-1633265486232-442588c9735a?q=80&w=2070&auto=format&fit=crop" alt="Key Management">
+                <div style="position:absolute; top:1rem; left:1rem;">
+                    <span class="stat-badge">Security</span>
+                </div>
+            </div>
+            <div style="padding:2rem;">
+                <h3 style="font-weight:800; font-size:1.4rem; margin-bottom:0.75rem;">Key Management</h3>
+                <p style="color:var(--text-mid); line-height:1.6; font-size:0.95rem; margin-bottom:1.5rem;">
+                    Generate and store cryptographic keys securely. Support for symmetric keys, RSA pairs, and passphrases.
+                </p>
+                <a href="{% url 'key_manager' %}" style="text-decoration:none; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
+                    Manage Keys <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Quiz System -->
+        <div class="feature-img-card">
+            <div class="feature-img-container">
+                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop" alt="Learning">
+                <div style="position:absolute; top:1rem; left:1rem;">
+                    <span class="stat-badge">Education</span>
+                </div>
+            </div>
+            <div style="padding:2rem;">
+                <h3 style="font-weight:800; font-size:1.4rem; margin-bottom:0.75rem;">Certification Quizzes</h3>
+                <p style="color:var(--text-mid); line-height:1.6; font-size:0.95rem; margin-bottom:1.5rem;">
+                    Test your knowledge with our structured assessment module. Track your progress and earn high scores.
+                </p>
+                <a href="{% url 'quiz' %}" style="text-decoration:none; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:6px;">
+                    Take a Quiz <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS SECTION -->
+<section style="background:#F8FAFC; padding:6rem 2rem;">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6rem; align-items:center;">
+            <div>
+                <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=2070&auto=format&fit=crop" style="width:100%; border-radius:30px; box-shadow: 0 30px 60px rgba(0,0,0,0.1);" alt="Interface">
+            </div>
+            <div>
+                <h2 style="font-size:2.5rem; font-weight:900; color:#0F172A; margin-bottom:2rem;">Why CryptoHub?</h2>
+                <div style="display:grid; gap:2rem;">
+                    <div style="display:flex; gap:1.5rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:white; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.05); color:var(--primary);">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-weight:800; margin-bottom:0.5rem;">Deep Theoretical Learning</h4>
+                            <p style="color:var(--text-mid); font-size:0.95rem;">Detailed reference for each algorithm including history, use-cases, and mathematical complexity.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1.5rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:white; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.05); color:var(--success);">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-weight:800; margin-bottom:0.5rem;">Activity Persistence</h4>
+                            <p style="color:var(--text-mid); font-size:0.95rem;">Full history of every encryption performed. Never lose track of your work with our audit logs.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:1.5rem;">
+                        <div style="width:48px; height:48px; border-radius:12px; background:white; display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.05); color:var(--accent);">
+                            <i class="fas fa-shield-check"></i>
+                        </div>
+                        <div>
+                            <h4 style="font-weight:800; margin-bottom:0.5rem;">Modern Standards</h4>
+                            <p style="color:var(--text-mid); font-size:0.95rem;">Learn modern industry standards like SHA-256 hashing and asymmetric RSA public-key crypto.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED ALGORITHMS -->
+{% if algorithms %}
+<section style="padding:6rem 2rem; max-width:1200px; margin:0 auto;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:3rem;">
+        <div>
+            <h2 style="font-size:2.2rem; font-weight:900; color:#0F172A;">Algorithm Library</h2>
+            <p style="color:var(--text-mid); margin-top:0.5rem;">Start exploring our collection of featured algorithms.</p>
+        </div>
+        <a href="{% url 'topics' %}" class="btn btn-primary" style="border-radius:10px;">View All 50+ Topics</a>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:1.5rem;">
+        {% for algo in algorithms %}
+        <div style="padding:2rem; background:white; border-radius:20px; border:1px solid #E2E8F0; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-5px)'" onmouseout="this.style.borderColor='#E2E8F0'; this.style.transform=''">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <span class="algo-chip" style="background:#EFF6FF; color:var(--primary); padding:6px 14px; border-radius:50px; font-family:var(--font-mono); font-weight:800; font-size:0.8rem;">{{ algo.acronym }}</span>
+                <span class="badge-tag badge-{% if algo.category == 'SYMMETRIC' %}blue{% elif algo.category == 'ASYMMETRIC' %}purple{% elif algo.category == 'HASH' %}green{% else %}amber{% endif %}" style="font-size:0.65rem; text-transform:uppercase;">{{ algo.get_category_display }}</span>
+            </div>
+            <h4 style="font-weight:800; margin-bottom:0.75rem; font-size:1.2rem;">{{ algo.name }}</h4>
+            <p style="color:var(--text-mid); font-size:0.88rem; line-height:1.6; margin-bottom:1.5rem; height:4.8rem; overflow:hidden;">
+                {{ algo.description|truncatechars:120 }}
+            </p>
+            <a href="{% url 'topic_detail' algo.id %}" style="text-decoration:none; font-weight:700; font-size:0.85rem; color:var(--primary); display:flex; align-items:center; gap:5px;">
+                Learn More <i class="fas fa-chevron-right" style="font-size:0.7rem;"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section style="padding:4rem 2rem; max-width:1200px; margin:0 auto 6rem;">
+    <div style="background:linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); border-radius:30px; padding:5rem 2rem; text-align:center; color:white; position:relative; overflow:hidden;">
+        <!-- Background decorative circles -->
+        <div style="position:absolute; top:-100px; right:-100px; width:300px; height:300px; border-radius:50%; background:rgba(255,255,255,0.1);"></div>
+        <div style="position:absolute; bottom:-50px; left:-50px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.05);"></div>
+
+        <div style="position:relative; z-index:1;">
+            <h2 style="font-size:3rem; font-weight:900; margin-bottom:1.5rem;">Ready to upgrade your skills?</h2>
+            <p style="font-size:1.2rem; opacity:0.9; max-width:600px; margin:0 auto 3rem; line-height:1.6;">
+                Join thousands of students and security professionals learning cryptography on our platform.
+            </p>
+            <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap;">
+                <a href="{% url 'register' %}" class="btn btn-lg" style="background:#FCD34D; color:#1E293B; font-weight:900; border-radius:12px; padding:1.2rem 3rem;">
+                    Create Free Account
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-lg" style="background:white; color:var(--primary); font-weight:900; border-radius:12px; padding:1.2rem 3rem;">
+                    Sign In
+                </a>
+            </div>
+            <p style="margin-top:2.5rem; font-size:0.85rem; opacity:0.7;">
+                <i class="fas fa-shield-alt" style="margin-right:6px;"></i> Secure SSL encrypted platform. Your data is always private.
+            </p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

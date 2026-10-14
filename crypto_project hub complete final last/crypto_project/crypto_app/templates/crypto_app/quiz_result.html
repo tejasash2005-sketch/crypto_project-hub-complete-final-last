@@ -1,0 +1,58 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Quiz Result — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <h1>📊 Quiz Results</h1>
+        </div>
+
+        <!-- Score Card -->
+        <div class="card" style="margin-bottom:1.5rem;text-align:center;">
+            <div style="background:linear-gradient(135deg,{% if percentage >= 80 %}#10B981,#059669{% elif percentage >= 50 %}#F59E0B,#D97706{% else %}#EF4444,#DC2626{% endif %});padding:2.5rem;color:white;">
+                <div style="font-size:4rem;font-weight:900;line-height:1;">{{ percentage|floatformat:0 }}%</div>
+                <div style="font-size:1.3rem;margin-top:0.5rem;">{{ score }} / {{ total }} correct</div>
+                <div style="margin-top:0.8rem;font-size:1rem;opacity:0.9;">
+                    {% if percentage >= 80 %}🎉 Excellent work!{% elif percentage >= 50 %}👍 Good effort!{% else %}📚 Keep studying!{% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;">
+                    <a href="{% url 'quiz' %}" class="btn btn-primary"><i class="fas fa-redo"></i> Try Again</a>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline"><i class="fas fa-home"></i> Dashboard</a>
+                    <a href="{% url 'algorithm_reference' %}" class="btn btn-outline"><i class="fas fa-book"></i> Study More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-list"></i></span> Detailed Results</h3>
+            </div>
+            <div class="card-body" style="padding:0;">
+                {% for r in results %}
+                <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);{% if r.correct %}background:#F0FDF4{% else %}background:#FFF5F5{% endif %}">
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <span style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;background:{% if r.correct %}var(--success){% else %}var(--danger){% endif %};color:white;">
+                            <i class="fas fa-{% if r.correct %}check{% else %}times{% endif %}"></i>
+                        </span>
+                        <div style="flex:1;">
+                            <p style="font-weight:700;margin-bottom:0.5rem;">{{ r.question }}</p>
+                            <div style="display:flex;gap:1rem;flex-wrap:wrap;font-size:0.85rem;">
+                                <span>Your answer: <strong style="color:{% if r.correct %}var(--success){% else %}var(--danger){% endif %};">{{ r.user_answer|default:"Not answered" }}</strong></span>
+                                {% if not r.correct %}<span>Correct: <strong style="color:var(--success);">{{ r.correct_answer }}</strong></span>{% endif %}
+                            </div>
+                            {% if r.explanation %}
+                            <p style="margin-top:0.5rem;font-size:0.83rem;color:var(--text-mid);background:rgba(0,0,0,0.03);padding:0.4rem 0.6rem;border-radius:6px;">💡 {{ r.explanation }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

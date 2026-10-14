@@ -1,0 +1,108 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}View Message - CryptoHub{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a> / <a href="{% url 'inbox' %}">Communication</a> / <span>View Message</span>
+            </div>
+            <h1>Secure Message</h1>
+            <p>From <strong>{{ message.sender.username }}</strong> to <strong>{{ message.receiver.username }}</strong></p>
+        </div>
+
+        <div class="grid-2">
+            <!-- LEFT COLUMN: Encrypted Data -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><div class="ch-icon"><i class="fas fa-lock"></i></div> Secure "Hash" Data</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <div class="form-control" style="background: #F8FAFC; font-weight: 700;">{{ message.subject|default:"(No Subject)" }}</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Encrypted Content</label>
+                        <textarea class="form-control" readonly style="font-family: var(--font-mono); font-size: 0.85rem; height: 120px; background: #0F172A; color: #38BDF8; border: none; padding: 1rem;">{{ message.encrypted_content }}</textarea>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-light);">
+                        <span><i class="fas fa-microchip"></i> Algo: {{ message.algorithm }}</span>
+                        <span><i class="fas fa-clock"></i> {{ message.created_at|date:"M d, H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Decryption & Key -->
+            <div class="card" style="border: 2px solid var(--primary);">
+                <div class="card-header" style="background: var(--bg);">
+                    <h3><div class="ch-icon" style="background: var(--primary);"><i class="fas fa-key"></i></div> Decryption Desk</h3>
+                </div>
+                <div class="card-body">
+                    {% if message.receiver == user %}
+                        <!-- SHARED KEY BOX (HIGH VISIBILITY) -->
+                        <div style="background: #FFFBEB; border: 2px solid #F59E0B; border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1.5rem; text-align: center;">
+                            <div style="color: #B45309; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
+                                <i class="fas fa-unlock-alt"></i> Shared Key to Unlock
+                            </div>
+                            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: #92400E; background: white; padding: 0.5rem; border-radius: var(--radius-sm); border: 1px solid #FEF3C7;">
+                                {{ message.encryption_key|default:"[No key saved]" }}
+                            </div>
+                            <p style="color: #D97706; font-size: 0.8rem; margin-top: 0.6rem; font-weight: 600;">
+                                Copy the key above and paste it below to decrypt.
+                            </p>
+                        </div>
+
+                        {% if not decrypted_content %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="decryption_key">Paste Key Here</label>
+                                <input type="text" name="decryption_key" id="decryption_key" class="form-control" placeholder="Enter secret key..." required style="border-color: var(--primary);">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" style="padding: 0.8rem;">
+                                <i class="fas fa-magic"></i> Reveal Original Message
+                            </button>
+                        </form>
+                        {% else %}
+                        <div style="background: #ECFDF5; border: 2px solid #10B981; border-radius: var(--radius); padding: 1.5rem;">
+                            <label style="color: #065F46; font-weight: 800; margin-bottom: 0.5rem; display: block;">
+                                <i class="fas fa-comment-dots"></i> Decrypted Message:
+                            </label>
+                            <div style="font-size: 1.1rem; color: #064E3B; line-height: 1.6; white-space: pre-wrap;">{{ decrypted_content }}</div>
+                        </div>
+                        <a href="{% url 'inbox' %}" class="btn btn-outline btn-sm" style="margin-top: 1rem;">
+                            <i class="fas fa-arrow-left"></i> Back to Inbox
+                        </a>
+                        {% endif %}
+
+                    {% else %}
+                        <!-- SENDER VIEW -->
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📤</div>
+                            <h3 style="margin-bottom: 0.5rem;">You Sent This</h3>
+                            <p style="color: var(--text-mid); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                                You sent this encrypted message to <strong>{{ message.receiver.username }}</strong>.
+                            </p>
+                            <div style="background: var(--bg); padding: 1rem; border-radius: var(--radius-sm); text-align: left;">
+                                <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-light);">Key you used:</label>
+                                <div style="font-family: var(--font-mono); font-weight: 700; color: var(--primary); font-size: 1.2rem;">{{ message.encryption_key }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .w-100 { width: 100%; justify-content: center; }
+</style>
+{% endblock %}

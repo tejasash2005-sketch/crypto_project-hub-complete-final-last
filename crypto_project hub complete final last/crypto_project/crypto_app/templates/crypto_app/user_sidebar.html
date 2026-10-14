@@ -1,0 +1,83 @@
+<!-- USER SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-section">
+        <div class="sidebar-title">Main</div>
+        <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-th-large"></i></span> Dashboard
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-title">💬 Communication</div>
+        <a href="{% url 'inbox' %}" class="{% if request.resolver_match.url_name == 'inbox' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-inbox"></i></span> Inbox
+            {% if stats.unread_messages %}
+            <span class="badge">{{ stats.unread_messages }}</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'send_message' %}" class="{% if request.resolver_match.url_name == 'send_message' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-paper-plane"></i></span> Send Message
+        </a>
+        <a href="{% url 'sent_messages' %}" class="{% if request.resolver_match.url_name == 'sent_messages' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-history"></i></span> Sent Messages
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-title">🔐 Encryption</div>
+        <a href="{% url 'encryption_tool' %}" class="{% if request.resolver_match.url_name == 'encryption_tool' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-key"></i></span> Encrypt / Decrypt
+        </a>
+        <a href="{% url 'history' %}" class="{% if request.resolver_match.url_name == 'history' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-history"></i></span> Encryption History
+        </a>
+        <a href="{% url 'key_manager' %}" class="{% if request.resolver_match.url_name == 'key_manager' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-key"></i></span> Key Manager
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-title">🚀 Advanced (Crypto Era)</div>
+        <a href="{% url 'professional_suite' %}" class="{% if request.resolver_match.url_name == 'professional_suite' %}active{% endif %}" style="border:1px solid var(--primary-light); background: rgba(59, 130, 246, 0.05); margin-bottom: 5px;">
+            <span class="icon"><i class="fas fa-shield-halved"></i></span> Professional Suite
+        </a>
+        <a href="{% url 'blockchain' %}" class="{% if request.resolver_match.url_name == 'blockchain' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-cubes"></i></span> Blockchain Explorer
+        </a>
+        <a href="{% url 'steganography' %}" class="{% if request.resolver_match.url_name == 'steganography' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-image"></i></span> Steganography
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-title">📚 Learning</div>
+        <a href="{% url 'algorithm_reference' %}" class="{% if request.resolver_match.url_name == 'algorithm_reference' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-book"></i></span> Algorithm Reference
+        </a>
+        <a href="{% url 'quiz' %}" class="{% if request.resolver_match.url_name == 'quiz' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-brain"></i></span> Take a Quiz
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-title">👤 Account</div>
+        <a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-user-circle"></i></span> My Profile
+        </a>
+        <a href="{% url 'announcements' %}" class="{% if request.resolver_match.url_name == 'announcements' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-bell"></i></span> Announcements
+        </a>
+        <a href="{% url 'activity_log' %}" class="{% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}">
+            <span class="icon"><i class="fas fa-clipboard-list"></i></span> Activity Log
+        </a>
+        <a href="{% url 'contact' %}">
+            <span class="icon"><i class="fas fa-envelope"></i></span> Contact Support
+        </a>
+    </div>
+
+    <div class="sidebar-section">
+        <a href="{% url 'logout' %}" style="color:var(--danger);">
+            <span class="icon" style="background:#FEF2F2;color:var(--danger);"><i class="fas fa-sign-out-alt"></i></span> Logout
+        </a>
+    </div>
+</aside>

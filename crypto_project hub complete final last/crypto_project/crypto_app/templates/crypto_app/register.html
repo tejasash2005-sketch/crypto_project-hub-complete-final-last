@@ -1,0 +1,69 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Register — CryptoHub{% endblock %}
+{% block body %}
+<div style="min-height:calc(100vh - 68px);display:flex;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,#F0F4FF 0%,#E0EAFF 100%);">
+    <div style="width:100%;max-width:540px;" class="fade-in">
+        <div class="card">
+            <div style="background:linear-gradient(135deg,#059669,#10B981);padding:2rem;text-align:center;color:white;">
+                <div style="width:65px;height:65px;background:rgba(255,255,255,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.8rem;font-size:1.8rem;">🚀</div>
+                <h1 style="font-size:1.5rem;font-weight:900;">Create Your Account</h1>
+                <p style="opacity:0.85;font-size:0.9rem;margin-top:0.3rem;">Join thousands learning cryptography</p>
+            </div>
+            <div class="card-body" style="padding:2rem;">
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.errors %}
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Please fix the errors below.
+                    </div>
+                    {% endif %}
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}<p style="color:var(--danger);font-size:0.8rem;">{{ form.first_name.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<p style="color:var(--danger);font-size:0.8rem;">{{ form.email.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<p style="color:var(--danger);font-size:0.8rem;">{{ form.username.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Password</label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}<p style="color:var(--danger);font-size:0.8rem;">{{ form.password1.errors.0 }}</p>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}<p style="color:var(--danger);font-size:0.8rem;">{{ form.password2.errors.0 }}</p>{% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Expertise Level</label>
+                        {{ form.expertise_level }}
+                    </div>
+                    <button type="submit" class="btn btn-success" style="width:100%;padding:0.8rem;font-size:1rem;">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </button>
+                </form>
+                <p style="text-align:center;margin-top:1.2rem;color:var(--text-mid);font-size:0.9rem;">
+                    Already have an account? <a href="{% url 'login' %}" style="color:var(--primary);font-weight:700;">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

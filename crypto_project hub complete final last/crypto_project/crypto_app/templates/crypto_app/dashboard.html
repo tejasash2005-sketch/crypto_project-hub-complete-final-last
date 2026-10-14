@@ -1,0 +1,173 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Dashboard — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'home' %}">Home</a> / Dashboard</div>
+            <h1>👋 Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p>Here's your cryptography activity overview.</p>
+        </div>
+
+        <!-- Announcements -->
+        {% for ann in announcements %}
+        <div class="alert alert-{% if ann.priority == 'HIGH' or ann.priority == 'CRITICAL' %}warning{% else %}info{% endif %}" style="margin-bottom:0.6rem;">
+            <i class="fas fa-bullhorn"></i>
+            <div><strong>{{ ann.title }}</strong> — {{ ann.content|truncatechars:120 }}</div>
+        </div>
+        {% endfor %}
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-lock"></i></div>
+                <div>
+                    <div class="stat-value">{{ stats.total_encryptions }}</div>
+                    <div class="stat-label">Encryptions</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-unlock"></i></div>
+                <div>
+                    <div class="stat-value">{{ stats.total_decryptions }}</div>
+                    <div class="stat-label">Decryptions</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fas fa-key"></i></div>
+                <div>
+                    <div class="stat-value">{{ stats.saved_keys }}</div>
+                    <div class="stat-label">Saved Keys</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-brain"></i></div>
+                <div>
+                    <div class="stat-value">{{ stats.quiz_attempts }}</div>
+                    <div class="stat-label">Quiz Attempts</div>
+                </div>
+            </div>
+            {% if stats.best_score %}
+            <div class="stat-card">
+                <div class="stat-icon cyan"><i class="fas fa-trophy"></i></div>
+                <div>
+                    <div class="stat-value">{{ stats.best_score.percentage|floatformat:0 }}%</div>
+                    <div class="stat-label">Best Quiz Score</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-bottom:1.5rem;">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-bolt"></i></span> Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div style="display:flex;flex-wrap:wrap;gap:0.8rem;">
+                    <a href="{% url 'encryption_tool' %}" class="btn btn-primary"><i class="fas fa-lock"></i> Encrypt Now</a>
+                    <a href="{% url 'key_manager' %}" class="btn btn-warning" style="background:var(--accent);color:white;"><i class="fas fa-key"></i> Generate Key</a>
+                    <a href="{% url 'quiz' %}" class="btn btn-success"><i class="fas fa-brain"></i> Take Quiz</a>
+                    <a href="{% url 'algorithm_reference' %}" class="btn btn-outline"><i class="fas fa-book"></i> Learn Algorithms</a>
+                    <a href="{% url 'history' %}" class="btn btn-outline"><i class="fas fa-history"></i> View History</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Recent Operations -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon"><i class="fas fa-history"></i></span> Recent Operations</h3>
+                    <a href="{% url 'history' %}" class="btn btn-outline btn-sm">View All</a>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    {% if recent_logs %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Algorithm</th><th>Op</th><th>Date</th></tr></thead>
+                            <tbody>
+                            {% for log in recent_logs %}
+                            <tr>
+                                <td><span class="algo-chip">{{ log.algorithm }}</span></td>
+                                <td>
+                                    <span class="badge-tag {% if log.operation == 'ENCRYPT' %}badge-blue{% elif log.operation == 'DECRYPT' %}badge-green{% else %}badge-amber{% endif %}">
+                                        {{ log.operation }}
+                                    </span>
+                                </td>
+                                <td style="color:var(--text-light);font-size:0.82rem;">{{ log.created_at|date:"M d, H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No operations yet</h3>
+                        <p><a href="{% url 'encryption_tool' %}">Start encrypting</a></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Saved Keys -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706);"><i class="fas fa-key"></i></span> Saved Keys</h3>
+                    <a href="{% url 'key_manager' %}" class="btn btn-outline btn-sm">Manage</a>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    {% if recent_keys %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Name</th><th>Algorithm</th><th>Type</th></tr></thead>
+                            <tbody>
+                            {% for key in recent_keys %}
+                            <tr>
+                                <td style="font-weight:700;">{{ key.name }}</td>
+                                <td><span class="algo-chip">{{ key.algorithm }}</span></td>
+                                <td><span class="badge-tag badge-purple">{{ key.get_key_type_display }}</span></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-key"></i>
+                        <h3>No keys saved</h3>
+                        <p><a href="{% url 'key_manager' %}">Generate your first key</a></p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile card -->
+        <div class="card" style="margin-top:1.2rem;">
+            <div class="card-header">
+                <h3><span class="ch-icon" style="background:linear-gradient(135deg,#10B981,#059669);"><i class="fas fa-user"></i></span> Your Profile</h3>
+                <a href="{% url 'profile' %}" class="btn btn-outline btn-sm">Edit Profile</a>
+            </div>
+            <div class="card-body">
+                <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+                    <div style="width:70px;height:70px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:1.8rem;font-weight:900;flex-shrink:0;">
+                        {{ user.first_name.0|default:user.username.0|upper }}
+                    </div>
+                    <div>
+                        <h3 style="font-size:1.2rem;font-weight:800;">{{ user.get_full_name|default:user.username }}</h3>
+                        <p style="color:var(--text-mid);">{{ user.email }}</p>
+                        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;">
+                            <span class="badge-tag badge-blue">{{ profile.get_expertise_level_display }}</span>
+                            {% if profile.organization %}<span class="badge-tag badge-gray">{{ profile.organization }}</span>{% endif %}
+                            <span class="badge-tag badge-green">Joined {{ user.date_joined|date:"M Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

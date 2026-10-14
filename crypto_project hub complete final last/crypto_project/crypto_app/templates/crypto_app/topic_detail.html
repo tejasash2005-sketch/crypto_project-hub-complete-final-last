@@ -1,0 +1,96 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}{{ algorithm.name }} — CryptoHub Topics{% endblock %}
+{% block body %}
+<div style="max-width:900px;margin:0 auto;padding:3rem 2rem;">
+    <div class="breadcrumb" style="margin-bottom:1.5rem;">
+        <a href="{% url 'home' %}">Home</a> /
+        <a href="{% url 'topics' %}">Topics</a> /
+        {{ algorithm.name }}
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:2.5rem;color:white;">
+            <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;">
+                <div style="width:70px;height:70px;background:rgba(255,255,255,0.2);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;font-family:var(--font-mono);">
+                    {{ algorithm.acronym }}
+                </div>
+                <div>
+                    <h1 style="font-size:2rem;font-weight:900;margin-bottom:0.3rem;">{{ algorithm.name }}</h1>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;opacity:0.9;">
+                        <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;">{{ algorithm.get_category_display }}</span>
+                        <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;">{{ algorithm.get_complexity_display }} Complexity</span>
+                        {% if algorithm.key_length %}<span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;">Key: {{ algorithm.key_length }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p style="font-size:1.05rem;color:var(--text-mid);line-height:1.8;">{{ algorithm.description }}</p>
+        </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:1.5rem;">
+        {% if algorithm.how_it_works %}
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-cogs"></i></span> How It Works</h3>
+            </div>
+            <div class="card-body">
+                <p style="color:var(--text-mid);line-height:1.8;">{{ algorithm.how_it_works }}</p>
+            </div>
+        </div>
+        {% endif %}
+        {% if algorithm.use_cases %}
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon" style="background:linear-gradient(135deg,#10B981,#059669);"><i class="fas fa-check-circle"></i></span> Use Cases</h3>
+            </div>
+            <div class="card-body">
+                <p style="color:var(--text-mid);line-height:1.8;">{{ algorithm.use_cases }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if algorithm.strengths or algorithm.weaknesses %}
+    <div class="grid-2" style="margin-bottom:1.5rem;">
+        {% if algorithm.strengths %}
+        <div class="card" style="border-left:4px solid var(--success);">
+            <div class="card-header">
+                <h3><span class="ch-icon" style="background:linear-gradient(135deg,#10B981,#059669);"><i class="fas fa-plus"></i></span> Strengths</h3>
+            </div>
+            <div class="card-body">
+                <p style="color:var(--text-mid);line-height:1.8;">{{ algorithm.strengths }}</p>
+            </div>
+        </div>
+        {% endif %}
+        {% if algorithm.weaknesses %}
+        <div class="card" style="border-left:4px solid var(--danger);">
+            <div class="card-header">
+                <h3><span class="ch-icon" style="background:linear-gradient(135deg,#EF4444,#DC2626);"><i class="fas fa-minus"></i></span> Weaknesses</h3>
+            </div>
+            <div class="card-body">
+                <p style="color:var(--text-mid);line-height:1.8;">{{ algorithm.weaknesses }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if algorithm.history %}
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+            <h3><span class="ch-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706);"><i class="fas fa-history"></i></span> History</h3>
+        </div>
+        <div class="card-body">
+            <p style="color:var(--text-mid);line-height:1.8;">{{ algorithm.history }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;padding:1rem 0;">
+        <a href="{% url 'topics' %}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> All Topics</a>
+        <a href="{% url 'register' %}" class="btn btn-primary"><i class="fas fa-lock"></i> Try This Algorithm</a>
+    </div>
+</div>
+{% endblock %}

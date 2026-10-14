@@ -1,0 +1,65 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Algorithm Reference — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Algorithms</div>
+            <h1>📚 Algorithm Reference</h1>
+            <p>Deep-dive documentation for every supported cryptographic algorithm.</p>
+        </div>
+
+        <!-- Category Filter -->
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <a href="{% url 'algorithm_reference' %}" class="btn {% if not category %}btn-primary{% else %}btn-outline{% endif %} btn-sm">All</a>
+            <a href="?category=SYMMETRIC" class="btn {% if category == 'SYMMETRIC' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Symmetric</a>
+            <a href="?category=ASYMMETRIC" class="btn {% if category == 'ASYMMETRIC' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Asymmetric</a>
+            <a href="?category=HASH" class="btn {% if category == 'HASH' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Hash Functions</a>
+            <a href="?category=CLASSICAL" class="btn {% if category == 'CLASSICAL' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Classical</a>
+            <a href="?category=ENCODING" class="btn {% if category == 'ENCODING' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Encoding</a>
+        </div>
+
+        {% if algorithms %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.2rem;">
+            {% for algo in algorithms %}
+            <div class="card" style="transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-hover)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div class="card-header">
+                    <h3>
+                        <span class="algo-chip">{{ algo.acronym }}</span>
+                        {{ algo.name }}
+                    </h3>
+                    <span class="badge-tag {% if algo.category == 'SYMMETRIC' %}badge-blue{% elif algo.category == 'ASYMMETRIC' %}badge-purple{% elif algo.category == 'HASH' %}badge-green{% elif algo.category == 'CLASSICAL' %}badge-amber{% else %}badge-cyan{% endif %}">
+                        {{ algo.get_category_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p style="color:var(--text-mid);font-size:0.9rem;margin-bottom:1rem;line-height:1.6;">{{ algo.description }}</p>
+                    {% if algo.how_it_works %}
+                    <div style="margin-bottom:0.8rem;">
+                        <strong style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);letter-spacing:0.5px;">How it works</strong>
+                        <p style="font-size:0.85rem;color:var(--text-mid);margin-top:0.3rem;line-height:1.5;">{{ algo.how_it_works|truncatechars:150 }}</p>
+                    </div>
+                    {% endif %}
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <span class="badge-tag {% if algo.complexity == 'LOW' %}badge-green{% elif algo.complexity == 'MEDIUM' %}badge-amber{% else %}badge-red{% endif %}">
+                            {{ algo.get_complexity_display }} Complexity
+                        </span>
+                        {% if algo.key_length %}<span class="badge-tag badge-gray">Key: {{ algo.key_length }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="empty-state" style="padding:4rem;">
+                <i class="fas fa-book-open"></i>
+                <h3>No algorithms found</h3>
+                <p>Check back later or ask admin to add algorithms.</p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

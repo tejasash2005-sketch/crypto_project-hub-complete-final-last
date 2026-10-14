@@ -1,0 +1,100 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}User Management — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / Users</div>
+        <h1>👥 User Management</h1>
+        <p>View, search, and manage all registered users.</p>
+    </div>
+
+    <!-- Search -->
+    <div class="card" style="margin-bottom:1.2rem;">
+        <div class="card-body">
+            <form method="get" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+                <div class="form-group" style="margin:0;flex:1;min-width:200px;">
+                    <label>Search Users</label>
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Search by username or email...">
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                <a href="{% url 'admin_users' %}" class="btn btn-outline">Clear</a>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><span class="ch-icon"><i class="fas fa-users"></i></span> All Users ({{ users.count }})</h3>
+        </div>
+        {% if users %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Expertise</th>
+                        <th>Encryptions</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td style="color:var(--text-light);font-size:0.8rem;">{{ forloop.counter }}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.85rem;flex-shrink:0;">
+                                    {{ u.first_name.0|default:u.username.0|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight:700;">{{ u.get_full_name|default:u.username }}</div>
+                                    {% if u.profile.organization %}<div style="font-size:0.75rem;color:var(--text-light);">{{ u.profile.organization }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-family:var(--font-mono);font-size:0.85rem;">{{ u.username }}</td>
+                        <td style="color:var(--text-mid);font-size:0.85rem;">{{ u.email }}</td>
+                        <td>
+                            {% if u.profile %}
+                            <span class="badge-tag {% if u.profile.expertise_level == 'EXPERT' %}badge-red{% elif u.profile.expertise_level == 'ADVANCED' %}badge-purple{% elif u.profile.expertise_level == 'INTERMEDIATE' %}badge-blue{% else %}badge-green{% endif %}">
+                                {{ u.profile.get_expertise_level_display }}
+                            </span>
+                            {% else %}<span class="badge-tag badge-gray">—</span>{% endif %}
+                        </td>
+                        <td style="font-weight:700;text-align:center;">
+                            {% if u.profile %}{{ u.profile.total_encryptions }}{% else %}0{% endif %}
+                        </td>
+                        <td>
+                            <span class="badge-tag {% if u.is_active %}badge-green{% else %}badge-red{% endif %}">
+                                {% if u.is_active %}<i class="fas fa-check"></i> Active{% else %}<i class="fas fa-ban"></i> Disabled{% endif %}
+                            </span>
+                        </td>
+                        <td style="font-size:0.82rem;color:var(--text-light);">{{ u.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'admin_toggle_user' u.id %}"
+                               onclick="return confirm('{% if u.is_active %}Disable{% else %}Enable{% endif %} user {{ u.username }}?')"
+                               class="btn {% if u.is_active %}btn-danger{% else %}btn-success{% endif %} btn-sm">
+                                <i class="fas fa-{% if u.is_active %}ban{% else %}check{% endif %}"></i>
+                                {% if u.is_active %}Disable{% else %}Enable{% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:4rem;">
+            <i class="fas fa-users"></i>
+            <h3>No users found</h3>
+            <p>{% if search %}No results for "{{ search }}"{% else %}No users registered yet.{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Send Message - CryptoHub{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a> / <span>Communication</span> / <span>Send</span>
+            </div>
+            <h1>Secure Communication</h1>
+            <p>Send an encrypted message to another user. They will need the key you use to decrypt it.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><div class="ch-icon"><i class="fas fa-paper-plane"></i></div> Compose Secure Message</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="{{ form.receiver.id_for_label }}">Select Recipient</label>
+                            {{ form.receiver }}
+                            <small class="form-text">Choose the user you want to communicate with.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.subject.id_for_label }}">Subject</label>
+                            {{ form.subject }}
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="{{ form.algorithm.id_for_label }}">Encryption Algorithm</label>
+                            {{ form.algorithm }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.encryption_key.id_for_label }}">Shared Secret Key</label>
+                            {{ form.encryption_key }}
+                            <small class="form-text">IMPORTANT: Share this key with the recipient via a separate secure channel.</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.message_to_encrypt.id_for_label }}">Message Content (Plaintext)</label>
+                        {{ form.message_to_encrypt }}
+                        <small class="form-text">This content will be encrypted locally before being stored in our database.</small>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-lock"></i> Encrypt & Send Message
+                        </button>
+                        <a href="{% url 'inbox' %}" class="btn btn-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem; background: #F8FAFC; border-style: dashed;">
+            <div class="card-body">
+                <h4 style="margin-bottom: 0.5rem;"><i class="fas fa-info-circle" style="color: var(--primary);"></i> How it works</h4>
+                <p style="font-size: 0.9rem; color: var(--text-mid);">
+                    When you click "Send", your message is encrypted using the selected algorithm and key.
+                    The <strong>plain text is never stored</strong>. The recipient will see the encrypted "hash"
+                    and must provide the correct key to unlock and read your message.
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

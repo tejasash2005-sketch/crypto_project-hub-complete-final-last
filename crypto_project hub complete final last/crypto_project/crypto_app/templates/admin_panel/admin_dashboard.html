@@ -1,0 +1,141 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Admin Dashboard — CryptoHub{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><i class="fas fa-shield-alt" style="color:var(--primary)"></i> / Admin Dashboard</div>
+        <h1>🛡️ Admin Dashboard</h1>
+        <p>System overview and management controls.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+            <div><div class="stat-value">{{ stats.total_users }}</div><div class="stat-label">Total Users</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-lock"></i></div>
+            <div><div class="stat-value">{{ stats.total_encryptions }}</div><div class="stat-label">Total Encryptions</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-envelope"></i></div>
+            <div><div class="stat-value">{{ stats.open_messages }}</div><div class="stat-label">New Messages</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon amber"><i class="fas fa-key"></i></div>
+            <div><div class="stat-value">{{ stats.active_keys }}</div><div class="stat-label">Active Keys</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-brain"></i></div>
+            <div><div class="stat-value">{{ stats.quiz_attempts }}</div><div class="stat-label">Quiz Attempts</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon cyan"><i class="fas fa-book"></i></div>
+            <div><div class="stat-value">{{ stats.algorithms }}</div><div class="stat-label">Algorithms</div></div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-header">
+            <h3><span class="ch-icon"><i class="fas fa-bolt"></i></span> Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div style="display:flex;flex-wrap:wrap;gap:0.8rem;">
+                <a href="{% url 'admin_users' %}" class="btn btn-primary"><i class="fas fa-users"></i> Manage Users</a>
+                <a href="{% url 'admin_messages' %}" class="btn btn-danger"><i class="fas fa-envelope"></i> View Messages ({{ stats.open_messages }} new)</a>
+                <a href="{% url 'admin_announcements' %}" class="btn btn-warning" style="background:var(--accent);color:white;"><i class="fas fa-bullhorn"></i> Post Announcement</a>
+                <a href="{% url 'admin_algorithms' %}" class="btn btn-outline"><i class="fas fa-plus"></i> Add Algorithm</a>
+                <a href="{% url 'admin_quiz' %}" class="btn btn-outline"><i class="fas fa-plus"></i> Add Quiz Question</a>
+                <a href="{% url 'admin_reports' %}" class="btn btn-outline"><i class="fas fa-chart-bar"></i> View Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- Recent Users -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-user-plus"></i></span> New Users</h3>
+                <a href="{% url 'admin_users' %}" class="btn btn-outline btn-sm">All Users</a>
+            </div>
+            {% if recent_users %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Email</th><th>Status</th><th>Joined</th></tr></thead>
+                    <tbody>
+                        {% for u in recent_users %}
+                        <tr>
+                            <td style="font-weight:700;">{{ u.get_full_name|default:u.username }}</td>
+                            <td style="font-size:0.85rem;color:var(--text-mid);">{{ u.email }}</td>
+                            <td>
+                                <span class="badge-tag {% if u.is_active %}badge-green{% else %}badge-red{% endif %}">
+                                    {% if u.is_active %}Active{% else %}Disabled{% endif %}
+                                </span>
+                            </td>
+                            <td style="font-size:0.82rem;color:var(--text-light);">{{ u.date_joined|date:"M d" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state" style="padding:2rem;"><i class="fas fa-users"></i><h3>No users yet</h3></div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Logs -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-history"></i></span> Recent Operations</h3>
+                <a href="{% url 'admin_logs' %}" class="btn btn-outline btn-sm">All Logs</a>
+            </div>
+            {% if recent_logs %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Algorithm</th><th>Op</th><th>Date</th></tr></thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                        <tr>
+                            <td style="font-weight:600;">{{ log.user.username }}</td>
+                            <td><span class="algo-chip">{{ log.algorithm }}</span></td>
+                            <td><span class="badge-tag {% if log.operation == 'ENCRYPT' %}badge-blue{% else %}badge-green{% endif %}">{{ log.operation }}</span></td>
+                            <td style="font-size:0.8rem;color:var(--text-light);">{{ log.created_at|date:"M d, H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state" style="padding:2rem;"><i class="fas fa-history"></i><h3>No logs yet</h3></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- New Messages -->
+    {% if recent_messages %}
+    <div class="card" style="margin-top:1.5rem;">
+        <div class="card-header">
+            <h3><span class="ch-icon" style="background:linear-gradient(135deg,#EF4444,#DC2626);"><i class="fas fa-envelope"></i></span> New Support Messages</h3>
+            <a href="{% url 'admin_messages' %}" class="btn btn-outline btn-sm">All Messages</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>From</th><th>Subject</th><th>Email</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody>
+                    {% for msg in recent_messages %}
+                    <tr>
+                        <td style="font-weight:700;">{{ msg.name }}</td>
+                        <td>{{ msg.subject|truncatechars:40 }}</td>
+                        <td style="font-size:0.85rem;color:var(--text-mid);">{{ msg.email }}</td>
+                        <td style="font-size:0.82rem;color:var(--text-light);">{{ msg.created_at|date:"M d" }}</td>
+                        <td><a href="{% url 'admin_reply_message' msg.id %}" class="btn btn-primary btn-sm"><i class="fas fa-reply"></i> Reply</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

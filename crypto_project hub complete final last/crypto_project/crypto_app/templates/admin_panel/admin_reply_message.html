@@ -1,0 +1,89 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Reply Message — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / <a href="{% url 'admin_messages' %}">Messages</a> / Reply</div>
+        <h1>✉️ Reply to Message</h1>
+    </div>
+
+    <div class="grid-2" style="align-items:start;">
+        <!-- Original Message -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-envelope-open"></i></span> Original Message</h3>
+            </div>
+            <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">From</label>
+                        <p style="font-weight:700;margin-top:0.2rem;">{{ msg.name }}</p>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">Email</label>
+                        <p style="margin-top:0.2rem;"><a href="mailto:{{ msg.email }}" style="color:var(--primary);">{{ msg.email }}</a></p>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">Subject</label>
+                        <p style="font-weight:700;margin-top:0.2rem;">{{ msg.subject }}</p>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">Message</label>
+                        <div style="background:#F8FAFF;border:1px solid var(--border);border-radius:8px;padding:1rem;margin-top:0.3rem;line-height:1.7;color:var(--text-mid);">
+                            {{ msg.message }}
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">Received</label>
+                        <p style="margin-top:0.2rem;color:var(--text-mid);">{{ msg.created_at|date:"F d, Y \a\t H:i" }}</p>
+                    </div>
+                    <div>
+                        <label style="font-size:0.8rem;text-transform:uppercase;color:var(--text-light);">Current Status</label>
+                        <span class="badge-tag {% if msg.status == 'NEW' %}badge-amber{% elif msg.status == 'IN_PROGRESS' %}badge-blue{% elif msg.status == 'RESOLVED' %}badge-green{% else %}badge-gray{% endif %}" style="margin-top:0.3rem;display:inline-flex;">
+                            {{ msg.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reply Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon" style="background:linear-gradient(135deg,#10B981,#059669);"><i class="fas fa-reply"></i></span> Write Reply</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" style="margin-bottom:1.2rem;">
+                    <i class="fas fa-info-circle"></i>
+                    <div>Replying will mark this message as <strong>Resolved</strong>. Make sure your reply is complete before submitting.</div>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>To: {{ msg.name }} ({{ msg.email }})</label>
+                        <div style="padding:0.5rem 0.8rem;background:#F8FAFF;border:1px solid var(--border);border-radius:8px;font-size:0.88rem;color:var(--text-mid);">
+                            {{ msg.email }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Re: {{ msg.subject }}</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Reply</label>
+                        <textarea name="reply" class="form-control" rows="8"
+                            placeholder="Write your reply here...">{{ msg.admin_reply }}</textarea>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-success" style="flex:1;">
+                            <i class="fas fa-check-circle"></i> Send Reply & Resolve
+                        </button>
+                        <a href="{% url 'admin_messages' %}" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'crypto_app/base.html' %}
+{% block body %}
+<div class="app-layout">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="sidebar" style="background:linear-gradient(180deg,#1E293B 0%,#0F172A 100%);">
+        <div style="padding:0.5rem 0.5rem 1.5rem;">
+            <div style="display:flex;align-items:center;gap:8px;padding:0.5rem;margin-bottom:1rem;">
+                <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;"><i class="fas fa-shield-alt"></i></div>
+                <div>
+                    <div style="color:white;font-weight:800;font-size:0.9rem;">Admin Panel</div>
+                    <div style="color:#64748B;font-size:0.75rem;">CryptoHub</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title" style="color:#475569;">Overview</div>
+            <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-tachometer-alt"></i></span> Dashboard
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title" style="color:#475569;">Management</div>
+            <a href="{% url 'admin_users' %}" class="{% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-users"></i></span> Users
+            </a>
+            <a href="{% url 'admin_logs' %}" class="{% if request.resolver_match.url_name == 'admin_logs' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-history"></i></span> Encryption Logs
+            </a>
+            <a href="{% url 'admin_keys' %}" class="{% if request.resolver_match.url_name == 'admin_keys' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-key"></i></span> Key Manager
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title" style="color:#475569;">Content</div>
+            <a href="{% url 'admin_algorithms' %}" class="{% if request.resolver_match.url_name == 'admin_algorithms' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-book"></i></span> Algorithms
+            </a>
+            <a href="{% url 'admin_quiz' %}" class="{% if request.resolver_match.url_name == 'admin_quiz' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-brain"></i></span> Quiz Manager
+            </a>
+            <a href="{% url 'admin_announcements' %}" class="{% if request.resolver_match.url_name == 'admin_announcements' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-bell"></i></span> Announcements
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title" style="color:#475569;">Support & Analytics</div>
+            <a href="{% url 'admin_messages' %}" class="{% if request.resolver_match.url_name == 'admin_messages' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-envelope"></i></span> Messages
+            </a>
+            <a href="{% url 'admin_activity' %}" class="{% if request.resolver_match.url_name == 'admin_activity' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-clipboard-list"></i></span> Activity Log
+            </a>
+            <a href="{% url 'admin_reports' %}" class="{% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}" style="color:#CBD5E1;">
+                <span class="icon" style="background:rgba(255,255,255,0.08);color:#CBD5E1;"><i class="fas fa-chart-bar"></i></span> Reports
+            </a>
+        </div>
+
+        <div class="sidebar-section">
+            <a href="{% url 'home' %}" style="color:#64748B;">
+                <span class="icon" style="background:rgba(255,255,255,0.05);color:#64748B;"><i class="fas fa-globe"></i></span> View Site
+            </a>
+            <a href="{% url 'logout' %}" style="color:#EF4444;">
+                <span class="icon" style="background:rgba(239,68,68,0.1);color:#EF4444;"><i class="fas fa-sign-out-alt"></i></span> Logout
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        {% block admin_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

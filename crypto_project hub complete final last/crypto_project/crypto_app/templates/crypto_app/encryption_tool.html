@@ -1,0 +1,226 @@
+{% extends 'crypto_app/base.html' %}
+
+{% block title %}Encryption Tool — CryptoHub{% endblock %}
+
+{% block extra_css %}
+<style>
+.radio-group { display:flex; gap:0.8rem; flex-wrap:wrap; }
+.radio-option { display:flex; align-items:center; gap:7px; background:#F8FAFF; border:2px solid var(--border); border-radius:8px; padding:0.5rem 1rem; cursor:pointer; font-weight:700; transition:all 0.2s; }
+.radio-option:has(input:checked) { background:#EFF6FF; border-color:var(--primary); color:var(--primary); }
+.radio-option input { accent-color:var(--primary); }
+
+.output-box { background:#F8FAFF; border:2px solid var(--border); border-radius:10px; padding:1.2rem; font-family:var(--font-mono); font-size:0.9rem; word-break:break-all; min-height:80px; position:relative; line-height:1.7; }
+
+.algo-info { background:#EFF6FF; border:1px solid #DBEAFE; border-radius:8px; padding:0.8rem 1rem; font-size:0.85rem; color:var(--primary); margin-top:0.5rem; display:none; }
+
+.algo-box {
+    padding:0.5rem 0.7rem;
+    background:#F8FAFF;
+    border-radius:6px;
+    font-size:0.82rem;
+    font-weight:700;
+    font-family:var(--font-mono);
+    color:var(--primary);
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="app-layout">
+
+    {% include 'crypto_app/user_sidebar.html' %}
+
+    <main class="main-content fade-in">
+
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a> / Encryption Tool
+            </div>
+            <h1>🔐 Encryption & Decryption Tool</h1>
+            <p>Encrypt or decrypt text using multiple algorithms. Results are saved to your history.</p>
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+
+            <!-- INPUT -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon"><i class="fas fa-keyboard"></i></span> Input</h3>
+                </div>
+
+                <div class="card-body">
+                    <form method="post" id="encryptForm">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label>Select Algorithm</label>
+                            {{ form.algorithm }}
+                            <div class="algo-info" id="algoInfo"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Operation</label>
+                            <div class="radio-group">
+                                {% for radio in form.operation %}
+                                <label class="radio-option">
+                                    {{ radio.tag }} {{ radio.choice_label }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Input Text</label>
+                            {{ form.input_text }}
+                        </div>
+
+                        <div class="form-group" id="keyField">
+                            <label>Encryption Key <span style="color:var(--text-light);font-weight:400;">(optional)</span></label>
+                            {{ form.key }}
+                            <p class="form-text">
+                                Caesar → number (3) | Vigenere → word | AES/XOR → secret key
+                            </p>
+                        </div>
+
+                        <div class="form-check" style="margin-bottom:1rem;">
+                            {{ form.save_to_history }}
+                            <label for="{{ form.save_to_history.id_for_label }}">
+                                Save to history
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%;">
+                            <i class="fas fa-cogs"></i> Run Algorithm
+                        </button>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- OUTPUT -->
+            <div>
+
+                {% if result %}
+                <div class="card" style="{% if result.success %}border-left:4px solid var(--success){% else %}border-left:4px solid var(--danger){% endif %}">
+
+                    <div class="card-header">
+                        <h3>
+                            <span class="ch-icon">
+                                <i class="fas fa-{% if result.success %}check{% else %}times{% endif %}"></i>
+                            </span>
+                            {% if result.success %}Result{% else %}Error{% endif %}
+                        </h3>
+
+                        {% if result.success %}
+                        <button onclick="copyOutput()" class="btn btn-outline btn-sm">
+                            Copy
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+
+                        {% if result.success %}
+                        <div class="output-box" id="outputText">
+                            {{ result.output }}
+                        </div>
+
+                        {% if result.key_used %}
+                        <div style="margin-top:1rem;">
+                            <label>Key Used:</label>
+                            <div class="output-box" style="font-size:0.8rem;">
+                                {{ result.key_used }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% else %}
+                        <div class="alert alert-error">
+                            {{ result.error }}
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ALGORITHMS LIST -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>
+                            <span class="ch-icon"><i class="fas fa-info"></i></span>
+                            Supported Algorithms
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+
+                            {% for algo, label, color in algo_list %}
+                                <div class="algo-box">{{ algo }}</div>
+                            {% empty %}
+                                <!-- fallback (no split used anymore) -->
+                                <div class="algo-box">CAESAR</div>
+                                <div class="algo-box">VIGENERE</div>
+                                <div class="algo-box">ROT13</div>
+                                <div class="algo-box">ATBASH</div>
+                                <div class="algo-box">AES</div>
+                                <div class="algo-box">XOR</div>
+                                <div class="algo-box">RSA</div>
+                                <div class="algo-box">BASE64</div>
+                                <div class="algo-box">MD5</div>
+                                <div class="algo-box">SHA256</div>
+                                <div class="algo-box">SHA512</div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const algoDescriptions = {
+    'CAESAR': 'Shift cipher',
+    'VIGENERE': 'Keyword cipher',
+    'ROT13': 'Shift 13',
+    'ATBASH': 'Reverse alphabet',
+    'AES': 'Symmetric encryption',
+    'XOR': 'Bitwise encryption',
+    'RSA': 'Public/private encryption',
+    'BASE64': 'Encoding',
+    'MD5': 'Hash (one-way)',
+    'SHA256': 'Secure hash',
+    'SHA512': 'Stronger hash'
+};
+
+const noKeyAlgos = ['ROT13','ATBASH','BASE64','MD5','SHA256','SHA512'];
+
+document.getElementById('algorithm-select')?.addEventListener('change', function() {
+    const val = this.value;
+    const info = document.getElementById('algoInfo');
+    const keyField = document.getElementById('keyField');
+
+    if (algoDescriptions[val]) {
+        info.style.display = 'block';
+        info.innerText = algoDescriptions[val];
+    } else {
+        info.style.display = 'none';
+    }
+
+    keyField.style.opacity = noKeyAlgos.includes(val) ? '0.4' : '1';
+});
+
+function copyOutput() {
+    const text = document.getElementById('outputText').innerText;
+    navigator.clipboard.writeText(text);
+}
+</script>
+{% endblock %}

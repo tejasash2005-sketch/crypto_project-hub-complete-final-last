@@ -1,0 +1,61 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}About Cryptography — CryptoHub{% endblock %}
+{% block body %}
+<div style="max-width:1100px;margin:0 auto;padding:3rem 2rem;">
+    <div style="text-align:center;margin-bottom:3rem;">
+        <h1 style="font-size:2.5rem;font-weight:900;">🔐 About Cryptography</h1>
+        <p style="color:var(--text-mid);font-size:1.1rem;max-width:700px;margin:0.8rem auto;">Cryptography is the science of secure communication — protecting information from unauthorized access.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:2rem;">
+        <div class="card">
+            <div class="card-body">
+                <h2 style="font-weight:900;margin-bottom:1rem;">📖 What is Cryptography?</h2>
+                <p style="color:var(--text-mid);line-height:1.8;margin-bottom:1rem;">Cryptography is the practice and study of techniques for securing communication in the presence of third parties called adversaries. It involves creating written or generated codes that allow information to be kept secret.</p>
+                <p style="color:var(--text-mid);line-height:1.8;">Modern cryptography exists at the intersection of mathematics, computer science, electrical engineering, communication science, and physics.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h2 style="font-weight:900;margin-bottom:1rem;">🏛️ History</h2>
+                <p style="color:var(--text-mid);line-height:1.8;margin-bottom:1rem;">Cryptography has a long history dating back to ancient Egypt. Julius Caesar used a simple substitution cipher (the Caesar cipher) to send secret messages. During World War II, the Enigma machine was used by Germany to encrypt military communications.</p>
+                <p style="color:var(--text-mid);line-height:1.8;">The modern era began with public-key cryptography in the 1970s, revolutionizing how we secure digital communications.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:2rem;">
+        <div class="card-body">
+            <h2 style="font-weight:900;margin-bottom:1.5rem;text-align:center;">⚙️ Types of Cryptography</h2>
+            <div class="grid-3">
+                <div style="text-align:center;padding:1.5rem;background:#EFF6FF;border-radius:var(--radius);">
+                    <div style="font-size:2.5rem;margin-bottom:0.8rem;">🔒</div>
+                    <h3 style="font-weight:800;margin-bottom:0.5rem;color:var(--primary);">Symmetric</h3>
+                    <p style="color:var(--text-mid);font-size:0.88rem;line-height:1.6;">Same key used for both encryption and decryption. Examples: AES, DES, 3DES.</p>
+                </div>
+                <div style="text-align:center;padding:1.5rem;background:#F5F3FF;border-radius:var(--radius);">
+                    <div style="font-size:2.5rem;margin-bottom:0.8rem;">🗝️</div>
+                    <h3 style="font-weight:800;margin-bottom:0.5rem;color:#7C3AED;">Asymmetric</h3>
+                    <p style="color:var(--text-mid);font-size:0.88rem;line-height:1.6;">Public and private key pair. Examples: RSA, ECC, Diffie-Hellman.</p>
+                </div>
+                <div style="text-align:center;padding:1.5rem;background:#ECFDF5;border-radius:var(--radius);">
+                    <div style="font-size:2.5rem;margin-bottom:0.8rem;">#️⃣</div>
+                    <h3 style="font-weight:800;margin-bottom:0.5rem;color:var(--success);">Hash Functions</h3>
+                    <p style="color:var(--text-mid);font-size:0.88rem;line-height:1.6;">One-way function that produces a fixed-size output. Examples: MD5, SHA-256, SHA-512.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="text-align:center;padding:2.5rem;">
+            <h2 style="font-weight:900;margin-bottom:1rem;">🚀 Start Learning Today</h2>
+            <p style="color:var(--text-mid);max-width:600px;margin:0 auto 1.5rem;">Register for free to access our full suite of cryptography tools, algorithm documentation, quizzes, and more.</p>
+            <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg"><i class="fas fa-user-plus"></i> Create Account</a>
+                <a href="{% url 'topics' %}" class="btn btn-outline btn-lg"><i class="fas fa-book"></i> Browse Topics</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

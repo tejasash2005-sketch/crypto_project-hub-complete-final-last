@@ -1,0 +1,165 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}My Profile — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Profile</div>
+            <h1>👤 My Profile</h1>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+            <div>
+                <!-- Profile Card -->
+                <div class="card" style="margin-bottom:1.2rem;">
+                    <div style="background:linear-gradient(135deg,var(--primary),var(--secondary));padding:2rem;text-align:center;color:white;">
+                        <div style="width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;margin:0 auto 1rem;">
+                            {{ user.first_name.0|default:user.username.0|upper }}
+                        </div>
+                        <h2 style="font-weight:900;">{{ user.get_full_name|default:user.username }}</h2>
+                        <p style="opacity:0.85;">{{ user.email }}</p>
+                        <div style="margin-top:0.8rem;display:flex;justify-content:center;gap:0.5rem;flex-wrap:wrap;">
+                            <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">{{ profile.get_expertise_level_display }}</span>
+                            <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;">{{ user.date_joined|date:"M Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;text-align:center;">
+                            <div>
+                                <div style="font-size:1.5rem;font-weight:900;color:var(--primary);">{{ profile.total_encryptions }}</div>
+                                <div style="font-size:0.75rem;color:var(--text-light);font-weight:700;">Encryptions</div>
+                            </div>
+                            <div>
+                                <div style="font-size:1.5rem;font-weight:900;color:var(--success);">{{ profile.total_decryptions }}</div>
+                                <div style="font-size:0.75rem;color:var(--text-light);font-weight:700;">Decryptions</div>
+                            </div>
+                            <div>
+                                <div style="font-size:1.5rem;font-weight:900;color:var(--accent);">{{ quiz_attempts|length }}</div>
+                                <div style="font-size:0.75rem;color:var(--text-light);font-weight:700;">Quiz Attempts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><span class="ch-icon"><i class="fas fa-edit"></i></span> Edit Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                {{ form.phone }}
+                            </div>
+                            <div class="form-group">
+                                <label>Organization</label>
+                                {{ form.organization }}
+                            </div>
+                            <div class="form-group">
+                                <label>Expertise Level</label>
+                                {{ form.expertise_level }}
+                            </div>
+                            <div class="form-group">
+                                <label>Preferred Algorithm</label>
+                                {{ form.preferred_algorithm }}
+                            </div>
+                            <div class="form-group">
+                                <label>Bio</label>
+                                {{ form.bio }}
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <!-- Quiz History -->
+                <div class="card" style="margin-bottom:1.2rem;">
+                    <div class="card-header">
+                        <h3><span class="ch-icon" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"><i class="fas fa-trophy"></i></span> Quiz Scores</h3>
+                    </div>
+                    {% if quiz_attempts %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Score</th><th>Percentage</th><th>Date</th></tr></thead>
+                            <tbody>
+                                {% for attempt in quiz_attempts %}
+                                <tr>
+                                    <td><strong>{{ attempt.score }}/{{ attempt.total_questions }}</strong></td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <div style="flex:1;background:var(--border);border-radius:10px;height:8px;overflow:hidden;">
+                                                <div style="width:{{ attempt.percentage|floatformat:0 }}%;height:100%;background:{% if attempt.percentage >= 80 %}var(--success){% elif attempt.percentage >= 50 %}var(--accent){% else %}var(--danger){% endif %};border-radius:10px;"></div>
+                                            </div>
+                                            <span style="font-weight:700;">{{ attempt.percentage|floatformat:0 }}%</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-size:0.82rem;color:var(--text-light);">{{ attempt.attempted_at|date:"M d, Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state" style="padding:2rem;">
+                        <i class="fas fa-brain"></i>
+                        <h3>No quiz attempts</h3>
+                        <p><a href="{% url 'quiz' %}">Take a quiz now</a></p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><span class="ch-icon" style="background:linear-gradient(135deg,#0EA5E9,#0284C7);"><i class="fas fa-clock"></i></span> Recent Activity</h3>
+                        <a href="{% url 'activity_log' %}" class="btn btn-outline btn-sm">All</a>
+                    </div>
+                    {% if activity_logs %}
+                    <div style="padding:0.5rem;">
+                        {% for log in activity_logs %}
+                        <div style="display:flex;align-items:center;gap:10px;padding:0.6rem 0.8rem;border-radius:8px;margin-bottom:2px;">
+                            <div style="width:32px;height:32px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:0.8rem;flex-shrink:0;">
+                                <i class="fas fa-{% if log.action == 'LOGIN' %}sign-in-alt{% elif log.action == 'ENCRYPT' %}lock{% elif log.action == 'DECRYPT' %}unlock{% elif log.action == 'KEY_CREATE' %}key{% elif log.action == 'QUIZ_ATTEMPT' %}brain{% else %}circle{% endif %}"></i>
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:0.85rem;font-weight:700;">{{ log.get_action_display }}</div>
+                                {% if log.description %}
+                                <div style="font-size:0.78rem;color:var(--text-light);">{{ log.description|truncatechars:50 }}</div>
+                                {% endif %}
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--text-light);flex-shrink:0;">{{ log.timestamp|date:"M d, H:i" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state" style="padding:2rem;">
+                        <i class="fas fa-clipboard-list"></i>
+                        <h3>No activity yet</h3>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

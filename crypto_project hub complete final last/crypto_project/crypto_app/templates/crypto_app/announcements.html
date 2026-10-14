@@ -1,0 +1,42 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Announcements — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Announcements</div>
+            <h1>📢 Announcements</h1>
+        </div>
+        {% if announcements %}
+            {% for ann in announcements %}
+            <div class="card" style="margin-bottom:1rem;border-left:4px solid {% if ann.priority == 'CRITICAL' %}var(--danger){% elif ann.priority == 'HIGH' %}var(--warning){% elif ann.priority == 'MEDIUM' %}var(--primary){% else %}var(--success){% endif %};">
+                <div class="card-body">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+                        <h3 style="font-weight:800;">{{ ann.title }}</h3>
+                        <div style="display:flex;gap:0.5rem;">
+                            <span class="badge-tag {% if ann.priority == 'CRITICAL' %}badge-red{% elif ann.priority == 'HIGH' %}badge-amber{% elif ann.priority == 'MEDIUM' %}badge-blue{% else %}badge-green{% endif %}">
+                                {{ ann.get_priority_display }} Priority
+                            </span>
+                            <span class="badge-tag badge-gray">{{ ann.get_target_audience_display }}</span>
+                        </div>
+                    </div>
+                    <p style="color:var(--text-mid);line-height:1.7;">{{ ann.content }}</p>
+                    <p style="font-size:0.8rem;color:var(--text-light);margin-top:0.8rem;">
+                        Posted {{ ann.created_at|date:"M d, Y" }}{% if ann.created_by %} by {{ ann.created_by.get_full_name|default:ann.created_by.username }}{% endif %}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="card">
+            <div class="empty-state" style="padding:4rem;">
+                <i class="fas fa-bell-slash"></i>
+                <h3>No announcements</h3>
+                <p>Check back later for updates.</p>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

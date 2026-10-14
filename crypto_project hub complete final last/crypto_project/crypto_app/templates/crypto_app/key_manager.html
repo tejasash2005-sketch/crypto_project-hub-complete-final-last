@@ -1,0 +1,93 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Key Manager — CryptoHub{% endblock %}
+{% block body %}
+<div class="app-layout">
+    {% include 'crypto_app/user_sidebar.html' %}
+    <main class="main-content fade-in">
+        <div class="page-header">
+            <div class="breadcrumb"><a href="{% url 'dashboard' %}">Dashboard</a> / Key Manager</div>
+            <h1>🔑 Key Manager</h1>
+            <p>Generate and manage your cryptographic keys securely.</p>
+        </div>
+        <div class="grid-2" style="align-items:start;">
+            <!-- Generate Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706);"><i class="fas fa-plus"></i></span> Generate New Key</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Key Name / Label</label>
+                            {{ form.key_name }}
+                        </div>
+                        <div class="form-group">
+                            <label>Algorithm (e.g. AES-256)</label>
+                            {{ form.algorithm }}
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Key Length</label>
+                                {{ form.length }}
+                            </div>
+                            <div class="form-group">
+                                <label>Key Format</label>
+                                {{ form.key_type }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            {{ form.description }}
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">
+                            <i class="fas fa-cog"></i> Generate & Save Key
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Keys List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon"><i class="fas fa-key"></i></span> Saved Keys ({{ keys.count }})</h3>
+                </div>
+                {% if keys %}
+                <div style="padding:1rem;display:flex;flex-direction:column;gap:0.8rem;">
+                    {% for key in keys %}
+                    <div style="border:1px solid var(--border);border-radius:10px;padding:1rem;background:#FAFBFF;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                            <div>
+                                <span style="font-weight:800;">{{ key.name }}</span>
+                                <span class="algo-chip" style="margin-left:6px;">{{ key.algorithm }}</span>
+                            </div>
+                            <a href="{% url 'delete_key' key.id %}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Delete this key?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                        <div style="font-family:var(--font-mono);font-size:0.78rem;background:white;padding:0.5rem;border-radius:6px;border:1px solid var(--border);word-break:break-all;color:var(--text-mid);">
+                            {{ key.key_value|truncatechars:60 }}
+                        </div>
+                        <div style="display:flex;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;">
+                            <span class="badge-tag badge-purple">{{ key.get_key_type_display }}</span>
+                            <span class="badge-tag badge-gray" style="font-size:0.72rem;">{{ key.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% if key.description %}
+                        <p style="font-size:0.82rem;color:var(--text-mid);margin-top:0.4rem;">{{ key.description }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state" style="padding:3rem;">
+                    <i class="fas fa-key"></i>
+                    <h3>No keys yet</h3>
+                    <p>Generate your first cryptographic key.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

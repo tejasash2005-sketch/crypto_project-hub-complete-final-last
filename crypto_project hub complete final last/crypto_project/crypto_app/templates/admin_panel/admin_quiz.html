@@ -1,0 +1,162 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Quiz Manager — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / Quiz</div>
+        <h1>🧠 Quiz Manager</h1>
+        <p>Add quiz questions and view attempt results.</p>
+    </div>
+
+    <div class="grid-2" style="align-items:start;margin-bottom:1.5rem;">
+        <!-- Add Question -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="ch-icon"><i class="fas fa-plus"></i></span> Add Question</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Question</label>
+                        <textarea name="question" class="form-control" rows="3" placeholder="Enter question..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Option A</label>
+                        <input type="text" name="option_a" class="form-control" placeholder="Option A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option B</label>
+                        <input type="text" name="option_b" class="form-control" placeholder="Option B" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option C</label>
+                        <input type="text" name="option_c" class="form-control" placeholder="Option C" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option D</label>
+                        <input type="text" name="option_d" class="form-control" placeholder="Option D" required>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Correct Answer</label>
+                            <select name="correct_answer" class="form-control" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Difficulty</label>
+                            <select name="difficulty" class="form-control">
+                                <option value="EASY">Easy</option>
+                                <option value="MEDIUM" selected>Medium</option>
+                                <option value="HARD">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Explanation (shown after quiz)</label>
+                        <textarea name="explanation" class="form-control" rows="2" placeholder="Explain the correct answer..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        <i class="fas fa-plus"></i> Add Question
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quiz Stats -->
+        <div>
+            <div class="card" style="margin-bottom:1.2rem;">
+                <div class="card-header">
+                    <h3><span class="ch-icon" style="background:linear-gradient(135deg,#7C3AED,#6D28D9);"><i class="fas fa-chart-pie"></i></span> Quiz Stats</h3>
+                </div>
+                <div class="card-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:center;">
+                        <div style="padding:1rem;background:#F5F3FF;border-radius:10px;">
+                            <div style="font-size:2rem;font-weight:900;color:#7C3AED;">{{ questions.count }}</div>
+                            <div style="font-size:0.8rem;color:var(--text-light);font-weight:700;">Total Questions</div>
+                        </div>
+                        <div style="padding:1rem;background:#ECFDF5;border-radius:10px;">
+                            <div style="font-size:2rem;font-weight:900;color:var(--success);">{{ attempts.count }}</div>
+                            <div style="font-size:0.8rem;color:var(--text-light);font-weight:700;">Total Attempts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Attempts -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="ch-icon"><i class="fas fa-list"></i></span> Recent Attempts</h3>
+                </div>
+                {% if attempts %}
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>User</th><th>Score</th><th>%</th><th>Date</th></tr></thead>
+                        <tbody>
+                            {% for attempt in attempts %}
+                            <tr>
+                                <td style="font-weight:700;">{{ attempt.user.username }}</td>
+                                <td>{{ attempt.score }}/{{ attempt.total_questions }}</td>
+                                <td>
+                                    <span class="badge-tag {% if attempt.percentage >= 80 %}badge-green{% elif attempt.percentage >= 50 %}badge-amber{% else %}badge-red{% endif %}">
+                                        {{ attempt.percentage|floatformat:0 }}%
+                                    </span>
+                                </td>
+                                <td style="font-size:0.8rem;color:var(--text-light);">{{ attempt.attempted_at|date:"M d" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state" style="padding:2rem;"><i class="fas fa-brain"></i><h3>No attempts yet</h3></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- All Questions -->
+    <div class="card">
+        <div class="card-header">
+            <h3><span class="ch-icon"><i class="fas fa-question-circle"></i></span> All Questions ({{ questions.count }})</h3>
+        </div>
+        {% if questions %}
+        <div style="padding:1rem;display:flex;flex-direction:column;gap:0.8rem;">
+            {% for q in questions %}
+            <div style="border:1px solid var(--border);border-radius:10px;padding:1rem;background:#FAFBFF;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+                    <div style="flex:1;">
+                        <p style="font-weight:700;margin-bottom:0.5rem;">Q{{ forloop.counter }}. {{ q.question }}</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;font-size:0.83rem;">
+                            <span style="{% if q.correct_answer == 'A' %}color:var(--success);font-weight:800;{% else %}color:var(--text-mid);{% endif %}">A. {{ q.option_a }}</span>
+                            <span style="{% if q.correct_answer == 'B' %}color:var(--success);font-weight:800;{% else %}color:var(--text-mid);{% endif %}">B. {{ q.option_b }}</span>
+                            <span style="{% if q.correct_answer == 'C' %}color:var(--success);font-weight:800;{% else %}color:var(--text-mid);{% endif %}">C. {{ q.option_c }}</span>
+                            <span style="{% if q.correct_answer == 'D' %}color:var(--success);font-weight:800;{% else %}color:var(--text-mid);{% endif %}">D. {{ q.option_d }}</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                        <span class="badge-tag {% if q.difficulty == 'EASY' %}badge-green{% elif q.difficulty == 'MEDIUM' %}badge-amber{% else %}badge-red{% endif %}">{{ q.difficulty }}</span>
+                        <span class="badge-tag badge-blue">Answer: {{ q.correct_answer }}</span>
+                        {% if not q.is_active %}<span class="badge-tag badge-gray">Inactive</span>{% endif %}
+                    </div>
+                </div>
+                {% if q.explanation %}
+                <p style="font-size:0.8rem;color:var(--text-mid);margin-top:0.5rem;border-top:1px solid var(--border);padding-top:0.4rem;">💡 {{ q.explanation }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:3rem;">
+            <i class="fas fa-question-circle"></i>
+            <h3>No questions yet</h3>
+            <p>Add your first quiz question using the form.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

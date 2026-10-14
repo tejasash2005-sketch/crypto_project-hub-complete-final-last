@@ -1,0 +1,95 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Contact Messages — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / Messages</div>
+        <h1>✉️ Contact Messages</h1>
+        <p>View and respond to user support messages.</p>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card" style="margin-bottom:1.2rem;">
+        <div class="card-body">
+            <form method="get" style="display:flex;gap:0.8rem;align-items:flex-end;flex-wrap:wrap;">
+                <div class="form-group" style="margin:0;">
+                    <label>Status</label>
+                    <select name="status" class="form-control">
+                        <option value="">All Messages</option>
+                        <option value="NEW" {% if status_filter == 'NEW' %}selected{% endif %}>New</option>
+                        <option value="IN_PROGRESS" {% if status_filter == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                        <option value="RESOLVED" {% if status_filter == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+                        <option value="CLOSED" {% if status_filter == 'CLOSED' %}selected{% endif %}>Closed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="{% url 'admin_messages' %}" class="btn btn-outline">Clear</a>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><span class="ch-icon" style="background:linear-gradient(135deg,#EF4444,#DC2626);"><i class="fas fa-envelope"></i></span>
+                Messages ({{ messages_list.count }})
+            </h3>
+        </div>
+        {% if messages_list %}
+        <div style="padding:1rem;display:flex;flex-direction:column;gap:0.8rem;">
+            {% for msg in messages_list %}
+            <div style="border:1px solid var(--border);border-radius:12px;padding:1.2rem;background:{% if msg.status == 'NEW' %}#FFFBEB{% elif msg.status == 'RESOLVED' %}#F0FDF4{% else %}#FAFBFF{% endif %};">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+                    <div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                            <span style="font-weight:800;font-size:1rem;">{{ msg.name }}</span>
+                            <span class="badge-tag {% if msg.status == 'NEW' %}badge-amber{% elif msg.status == 'IN_PROGRESS' %}badge-blue{% elif msg.status == 'RESOLVED' %}badge-green{% else %}badge-gray{% endif %}">
+                                {{ msg.get_status_display }}
+                            </span>
+                            {% if msg.user %}<span class="badge-tag badge-cyan">Registered User</span>{% endif %}
+                        </div>
+                        <div style="font-size:0.85rem;color:var(--text-mid);margin-top:0.2rem;">
+                            <i class="fas fa-envelope" style="margin-right:4px;"></i>{{ msg.email }}
+                            &nbsp;·&nbsp;<i class="fas fa-clock" style="margin-right:4px;"></i>{{ msg.created_at|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                    {% if msg.status != 'RESOLVED' and msg.status != 'CLOSED' %}
+                    <a href="{% url 'admin_reply_message' msg.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-reply"></i> Reply & Resolve
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div style="background:white;border:1px solid var(--border);border-radius:8px;padding:0.8rem;margin-bottom:0.6rem;">
+                    <div style="font-size:0.8rem;text-transform:uppercase;font-weight:700;color:var(--text-light);letter-spacing:0.5px;margin-bottom:0.3rem;">Subject</div>
+                    <p style="font-weight:700;color:var(--text-dark);">{{ msg.subject }}</p>
+                </div>
+
+                <div style="background:white;border:1px solid var(--border);border-radius:8px;padding:0.8rem;">
+                    <div style="font-size:0.8rem;text-transform:uppercase;font-weight:700;color:var(--text-light);letter-spacing:0.5px;margin-bottom:0.3rem;">Message</div>
+                    <p style="color:var(--text-mid);font-size:0.9rem;line-height:1.7;">{{ msg.message }}</p>
+                </div>
+
+                {% if msg.admin_reply %}
+                <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:8px;padding:0.8rem;margin-top:0.6rem;">
+                    <div style="font-size:0.8rem;text-transform:uppercase;font-weight:700;color:var(--success);letter-spacing:0.5px;margin-bottom:0.3rem;">
+                        <i class="fas fa-check-circle"></i> Admin Reply
+                    </div>
+                    <p style="color:var(--text-dark);font-size:0.9rem;line-height:1.7;">{{ msg.admin_reply }}</p>
+                    {% if msg.resolved_at %}
+                    <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.4rem;">Resolved: {{ msg.resolved_at|date:"M d, Y H:i" }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:4rem;">
+            <i class="fas fa-envelope-open"></i>
+            <h3>No messages</h3>
+            <p>{% if status_filter %}No messages with status "{{ status_filter }}"{% else %}No contact messages yet{% endif %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

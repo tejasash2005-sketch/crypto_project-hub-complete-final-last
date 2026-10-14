@@ -1,0 +1,84 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% block title %}Activity Log — CryptoHub Admin{% endblock %}
+{% block admin_content %}
+<div class="fade-in">
+    <div class="page-header">
+        <div class="breadcrumb"><a href="{% url 'admin_dashboard' %}">Admin</a> / Activity</div>
+        <h1>📋 Platform Activity Log</h1>
+        <p>Full audit trail of all user actions across the platform.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3><span class="ch-icon"><i class="fas fa-clipboard-list"></i></span> Recent Activity ({{ logs.count }})</h3>
+        </div>
+        {% if logs %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Description</th>
+                        <th>IP Address</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="width:30px;height:30px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.75rem;flex-shrink:0;">
+                                    {{ log.user.username.0|upper }}
+                                </div>
+                                <span style="font-weight:700;">{{ log.user.username }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-tag
+                                {% if log.action == 'LOGIN' %}badge-green
+                                {% elif log.action == 'LOGOUT' %}badge-gray
+                                {% elif log.action == 'ENCRYPT' %}badge-blue
+                                {% elif log.action == 'DECRYPT' %}badge-cyan
+                                {% elif log.action == 'KEY_CREATE' %}badge-amber
+                                {% elif log.action == 'KEY_DELETE' %}badge-red
+                                {% elif log.action == 'QUIZ_ATTEMPT' %}badge-purple
+                                {% elif log.action == 'PROFILE_UPDATE' %}badge-blue
+                                {% else %}badge-gray{% endif %}">
+                                <i class="fas fa-
+                                    {% if log.action == 'LOGIN' %}sign-in-alt
+                                    {% elif log.action == 'LOGOUT' %}sign-out-alt
+                                    {% elif log.action == 'ENCRYPT' %}lock
+                                    {% elif log.action == 'DECRYPT' %}unlock
+                                    {% elif log.action == 'KEY_CREATE' %}key
+                                    {% elif log.action == 'KEY_DELETE' %}trash
+                                    {% elif log.action == 'QUIZ_ATTEMPT' %}brain
+                                    {% else %}circle{% endif %}"></i>
+                                {{ log.get_action_display }}
+                            </span>
+                        </td>
+                        <td style="color:var(--text-mid);font-size:0.88rem;max-width:200px;">
+                            {{ log.description|default:"—"|truncatechars:60 }}
+                        </td>
+                        <td style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-light);">
+                            {{ log.ip_address|default:"—" }}
+                        </td>
+                        <td style="font-size:0.82rem;color:var(--text-light);white-space:nowrap;">
+                            {{ log.timestamp|date:"M d, Y H:i:s" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:4rem;">
+            <i class="fas fa-clipboard-list"></i>
+            <h3>No activity recorded</h3>
+            <p>User activity will appear here as they use the platform.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'crypto_app/base.html' %}
+{% block title %}Cryptography Topics — CryptoHub{% endblock %}
+{% block body %}
+<div style="max-width:1200px;margin:0 auto;padding:3rem 2rem;">
+    <div style="text-align:center;margin-bottom:3rem;">
+        <h1 style="font-size:2.5rem;font-weight:900;">📚 Cryptography Topics</h1>
+        <p style="color:var(--text-mid);font-size:1.05rem;">Explore all cryptographic algorithms and techniques.</p>
+        <div style="margin-top:1.5rem;display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+            <a href="{% url 'register' %}" class="btn btn-primary"><i class="fas fa-lock"></i> Login to Practice</a>
+        </div>
+    </div>
+
+    {% if algorithms %}
+    <!-- Category Tabs -->
+    {% regroup algorithms by get_category_display as by_category %}
+    {% for group in by_category %}
+    <div style="margin-bottom:2.5rem;">
+        <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;">
+            <span style="width:4px;height:24px;background:var(--primary);border-radius:2px;display:inline-block;"></span>
+            {{ group.grouper }}
+        </h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;">
+            {% for algo in group.list %}
+            <div class="card" style="transition:all 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform=''">
+                <div class="card-body">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;">
+                        <span class="algo-chip" style="font-size:0.9rem;">{{ algo.acronym }}</span>
+                        <span class="badge-tag {% if algo.complexity == 'LOW' %}badge-green{% elif algo.complexity == 'MEDIUM' %}badge-amber{% else %}badge-red{% endif %}">
+                            {{ algo.get_complexity_display }}
+                        </span>
+                    </div>
+                    <h3 style="font-weight:800;margin-bottom:0.5rem;">{{ algo.name }}</h3>
+                    <p style="color:var(--text-mid);font-size:0.88rem;line-height:1.6;margin-bottom:0.8rem;">{{ algo.description|truncatechars:120 }}</p>
+                    {% if algo.key_length %}
+                    <p style="font-size:0.8rem;color:var(--text-light);"><strong>Key Length:</strong> {{ algo.key_length }}</p>
+                    {% endif %}
+                    <a href="{% url 'topic_detail' algo.id %}" class="btn btn-outline btn-sm" style="margin-top:0.8rem;">
+                        <i class="fas fa-book-open"></i> Learn More
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <!-- Default Topics when no DB entries -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;">
+        {% for topic in topic_list %}
+        {% empty %}
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">CAESAR</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">Caesar Cipher</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">The oldest known substitution cipher. Shifts each letter by a fixed number of positions.</p>
+        </div></div>
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">AES</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">AES Encryption</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">Advanced Encryption Standard — the most widely used symmetric cipher today.</p>
+        </div></div>
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">RSA</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">RSA Encryption</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">The most widely used asymmetric encryption algorithm. Based on factoring large primes.</p>
+        </div></div>
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">SHA-256</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">SHA-256 Hash</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">Part of SHA-2 family. Produces a 256-bit digest. Used in Bitcoin and TLS.</p>
+        </div></div>
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">VIGENERE</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">Vigenere Cipher</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">Polyalphabetic cipher using a keyword. Much stronger than simple Caesar substitution.</p>
+        </div></div>
+        <div class="card"><div class="card-body">
+            <span class="algo-chip">BASE64</span>
+            <h3 style="font-weight:800;margin:0.8rem 0 0.5rem;">Base64 Encoding</h3>
+            <p style="color:var(--text-mid);font-size:0.88rem;">Encoding scheme to convert binary data to ASCII text. Used in emails and web.</p>
+        </div></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div style="text-align:center;margin-top:3rem;padding:2rem;background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-radius:var(--radius);">
+        <h2 style="font-weight:900;margin-bottom:0.8rem;">Practice All Algorithms</h2>
+        <p style="color:var(--text-mid);margin-bottom:1.2rem;">Register for free to use our interactive encryption tool with all these algorithms.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg"><i class="fas fa-rocket"></i> Get Started Free</a>
+    </div>
+</div>
+{% endblock %}
